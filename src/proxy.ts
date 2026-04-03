@@ -1,6 +1,7 @@
-"use server"
+"use server";
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { request } from "node:https";
 
 export async function proxy(req: NextRequest) {
   let res = NextResponse.next();
@@ -15,34 +16,36 @@ export async function proxy(req: NextRequest) {
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value, options }) =>
-            req.cookies.set(name, value)
+            req.cookies.set(name, value),
           );
           res = NextResponse.next({
             request: req,
           });
           cookiesToSet.forEach(({ name, value, options }) =>
-            res.cookies.set(name, value, options)
+            res.cookies.set(name, value, options),
           );
         },
       },
-    }
+    },
   );
 
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
+  const { error, data } = await supabase.auth.getClaims();
+  const claims = data?.claims;
 
   const isAuthPage = req.nextUrl.pathname.startsWith("/auth");
 
-  if ((error || !user) && !isAuthPage) {
+  if (req.nextUrl.pathname === "/") {
+    return NextResponse.redirect(new URL("/dashboard", req.url));
+  }
+
+  if ((error || !claims) && !isAuthPage) {
     // Redirect to login if trying to access protected route
     const redirectUrl = new URL("/auth/login", req.url);
     redirectUrl.searchParams.set("redirectedFrom", req.nextUrl.pathname);
     return NextResponse.redirect(redirectUrl);
   }
 
-  if (user && isAuthPage) {
+  if (claims && isAuthPage) {
     // Redirect to dashboard if already logged in and trying to access auth pages
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
@@ -62,5 +65,3 @@ export const config = {
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
-
-
