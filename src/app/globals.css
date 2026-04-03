@@ -46,7 +46,34 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  --color-gold-primary: #d4af37;
+  --color-gold-dark: #a17c1a;
+
+  --color-purple-bg: #1a0b2e;
+  --color-purple-surface: #2e0f4f;
+  --color-purple-accent: #8a2be2;
+
+  --color-text-primary: #f5f5f5;
+  --color-text-secondary: #b3b3b3;
+  --color-text-tertiary: #0d0d12;
+
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
 }
+
+/*
+* Background → Midnight Purple (purple-bg)
+* Cards/Sections → Deep Violet (purple-surface)
+* Buttons → Royal Gold (gold-primary)
+* Button Hover → Imperial Gold (gold-dark)
+* Links/Active → Electric Purple (purple-accent)
+* Text → Soft White / Muted Gray (text-primary/text-secondary)
+* Success → Green (success)
+* Warning → Amber (warning)
+* Error → Red (error)
+*/
 
 :root {
   --background: oklch(1 0 0);
