@@ -38,6 +38,10 @@ export async function proxy(req: NextRequest) {
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
+  if(claims?.user_metadata?.role !== "admin" && req.nextUrl.pathname.startsWith("/admin")){
+    return NextResponse.redirect(new URL("/dashboard", req.url))
+  }
+
   if ((error || !claims) && !isAuthPage) {
     // Redirect to login if trying to access protected route
     const redirectUrl = new URL("/auth/login", req.url);
