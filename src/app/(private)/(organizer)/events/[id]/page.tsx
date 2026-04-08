@@ -100,7 +100,7 @@ export default function EventDetailsPage({ params }: PageProps) {
     async (categoryId: string, categoryName: string) => {
       openDeleteDialog(categoryId, categoryName);
     },
-    [openDeleteDialog]
+    [openDeleteDialog],
   );
 
   const executeDeleteCategory = useCallback(async () => {
@@ -110,9 +110,7 @@ export default function EventDetailsPage({ params }: PageProps) {
         await deleteCategory(id);
         toast.success("Category deleted successfully");
         setCategories((prev) => prev.filter((cat) => cat.id !== id));
-        setFilteredCategories((prev) =>
-          prev.filter((cat) => cat.id !== id)
-        );
+        setFilteredCategories((prev) => prev.filter((cat) => cat.id !== id));
       } catch (error: any) {
         console.error("Error deleting category:", error);
         toast.error(error.message || "Failed to delete category");
@@ -191,18 +189,6 @@ export default function EventDetailsPage({ params }: PageProps) {
   return (
     <div className="min-h-screen bg-purple-bg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Back Link */}
-        <Button
-          variant="ghost"
-          className="mb-6 text-text-secondary hover:text-gold-primary"
-          asChild
-        >
-          <Link href="/events">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Events
-          </Link>
-        </Button>
-
         {/* Header Section */}
         <Card className="bg-purple-surface border-purple-accent/50 mb-8">
           <CardContent className="p-6">
@@ -434,7 +420,7 @@ export default function EventDetailsPage({ params }: PageProps) {
                                 onClick={() =>
                                   handleDeleteCategory(
                                     category.id,
-                                    category.categoryName
+                                    category.categoryName,
                                   )
                                 }
                                 disabled={

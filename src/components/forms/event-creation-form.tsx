@@ -44,7 +44,7 @@ export function EventCreationForm() {
     mode: 'onChange',
   })
 
-  const { trigger, formState: { errors }, watch, setValue } = methods
+  const { trigger, watch, setValue } = methods
 
   // Load saved data from sessionStorage on mount
   useEffect(() => {
@@ -129,8 +129,7 @@ export function EventCreationForm() {
       const imageFile = formData.eventImage instanceof File ? formData.eventImage : null
       
       // Call the API to create the event
-      const createdEvent = await createEvent(formData, imageFile)
-      
+      createEvent(formData, imageFile)
       
       // Clear session storage
       sessionStorage.removeItem(STORAGE_KEY)
@@ -140,7 +139,7 @@ export function EventCreationForm() {
       })
       
       // Redirect to events page
-      router.push('/events')
+      router.replace('/events')
       router.refresh()
     } catch (error) {
       console.error('Error creating event:', error)

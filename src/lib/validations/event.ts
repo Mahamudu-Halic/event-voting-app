@@ -17,12 +17,12 @@ export const eventFormSchema = z.object({
   ]).optional(),
 
   // Step 2: Event Tools
-  enableNominations: z.boolean().default(false),
-  enableVoting: z.boolean().default(true),
+  enableNominations: z.boolean(),
+  enableVoting: z.boolean(),
 
   // Step 3: Pricing
   amountPerVote: z.number().min(0.1, 'Minimum amount is $0.10').max(1000, 'Maximum amount is $1000'),
-  serviceFee: z.enum(['10', '12']).default('10'),
+  serviceFee: z.enum(['10', '12']),
 })
 
 export type EventFormData = z.infer<typeof eventFormSchema>

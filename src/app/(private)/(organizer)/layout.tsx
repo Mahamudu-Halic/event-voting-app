@@ -30,7 +30,7 @@ export default async function PrivateLayout({ children }: PrivateLayoutProps) {
     <div className="h-screen bg-purple-bg flex">
       <Sidebar user={userData} />
       <div className="flex-1 flex flex-col overflow-hidden h-screen">
-        <Header user={userData} />
+        <Header />
         <main className="flex-1 overflow-y-auto">
           <div className="p-6 md:p-8">
             {children}

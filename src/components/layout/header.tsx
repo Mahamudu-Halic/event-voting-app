@@ -12,20 +12,14 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Home, ChevronRight, Bell, Search } from "lucide-react";
+import { Home, ChevronRight } from "lucide-react";
 
 interface HeaderProps {
-  user?: {
-    name: string;
-    email: string;
-    notifications?: number;
-  };
   showBreadcrumb?: boolean;
   className?: string;
 }
 
 export function Header({
-  user,
   showBreadcrumb = true,
   className,
 }: HeaderProps) {

@@ -112,9 +112,8 @@ export async function getAllEvents(
     .from("events")
     .select(`
       *,
-      created_by:auth.users!inner(
-        raw_user_meta_data->>first_name,
-        raw_user_meta_data->>last_name,
+      creator:auth.users!inner(
+        raw_user_meta_data,
         email
       )
     `, { count: "exact" })
@@ -157,11 +156,16 @@ export async function getAllEvents(
   const totalPages = Math.ceil(total / limit)
 
   // Transform data to include creator info
-  const eventsWithCreator: EventWithCreator[] = (data || []).map((item: Record<string, unknown>) => ({
-    ...(item as unknown as Event),
-    creator_name: `${(item.created_by as { first_name?: string })?.first_name || ""} ${(item.created_by as { last_name?: string })?.last_name || ""}`.trim(),
-    creator_email: (item.created_by as { email?: string })?.email || "",
-  }))
+  const eventsWithCreator: EventWithCreator[] = (data || []).map((item) => {
+    const rawEvent = item as unknown as Event
+    const creator = (item as { creator?: { raw_user_meta_data?: { first_name?: string; last_name?: string }; email?: string } }).creator
+    const meta = creator?.raw_user_meta_data || {}
+    return {
+      ...rawEvent,
+      creator_name: `${meta.first_name || ""} ${meta.last_name || ""}`.trim(),
+      creator_email: creator?.email || "",
+    }
+  })
 
   return {
     data: eventsWithCreator.map(toEventListItem),
