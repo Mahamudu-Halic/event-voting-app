@@ -27,7 +27,6 @@ export const signup = async (data: {
         first_name: data.first_name,
         last_name: data.last_name,
         phone_number: data.phone_number,
-        role: 'organizer', // Default role for new users
       },
     },
   });

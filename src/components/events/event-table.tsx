@@ -82,12 +82,16 @@ function getEventProgress(event: EventListItem): {
 
   // Check if ended
   if (votingEnd && now > votingEnd) {
-    return { label: 'Ended', className: 'bg-text-tertiary/20 text-text-tertiary border-text-tertiary/30' }
+    return { label: 'Ended', className: 'bg-slate-500/20 text-slate-300 border-slate-400/40' }
   }
   
-  // Check if in voting
+  // Check if in voting period - only open if approved by admin
   if (votingStart && votingEnd && now >= votingStart && now <= votingEnd) {
-    return { label: 'Voting Open', className: 'bg-purple-accent/20 text-purple-accent border-purple-accent/30' }
+    if (event.approvalStatus === 'approved') {
+      return { label: 'Voting Open', className: 'bg-purple-accent/20 text-purple-accent border-purple-accent/30' }
+    } else {
+      return { label: 'Pending Approval', className: 'bg-amber-500/20 text-amber-300 border-amber-400/40' }
+    }
   }
   
   // Check if in nominations
@@ -292,20 +296,9 @@ export function EventTable({
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <div className="flex gap-2">
-                      {event.enableVoting && (
-                        <Badge variant="outline" className="text-xs bg-purple-accent/10 border-purple-accent/30 text-purple-accent">
-                          <Trophy className="h-3 w-3 mr-1" />
-                          Voting
-                        </Badge>
-                      )}
-                      {event.enableNominations && (
-                        <Badge variant="outline" className="text-xs bg-purple-accent/10 border-purple-accent/30 text-purple-accent">
-                          <Users className="h-3 w-3 mr-1" />
-                          Nominations
-                        </Badge>
-                      )}
-                    </div>
+                    <Badge variant="outline" className="text-xs bg-purple-accent/10 border-purple-accent/30 text-purple-accent">
+                      {(event as any).categories || 0} {(event as any).categories === 1 ? 'Category' : 'Categories'}
+                    </Badge>
                   </TableCell>
                   <TableCell className="text-right">
                     <Popover>

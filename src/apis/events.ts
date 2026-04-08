@@ -75,8 +75,30 @@ export async function getOrganizerEvents(
   const total = count || 0
   const totalPages = Math.ceil(total / limit)
 
+  // Fetch category counts for each event
+  const eventIds = (data as Event[]).map(e => e.id)
+  let categoryCounts: Record<string, number> = {}
+  
+  if (eventIds.length > 0) {
+    const { data: categoriesData, error: categoriesError } = await supabase
+      .from("categories")
+      .select("event_id, id")
+      .in("event_id", eventIds)
+      .eq("is_active", true)
+    
+    if (!categoriesError && categoriesData) {
+      categoryCounts = categoriesData.reduce((acc, cat) => {
+        acc[cat.event_id] = (acc[cat.event_id] || 0) + 1
+        return acc
+      }, {} as Record<string, number>)
+    }
+  }
+
   return {
-    data: (data as Event[]).map(toEventListItem),
+    data: (data as Event[]).map(event => ({
+      ...toEventListItem(event),
+      categories: categoryCounts[event.id] || 0,
+    })),
     total,
     page,
     limit,
@@ -167,8 +189,30 @@ export async function getAllEvents(
     }
   })
 
+  // Fetch category counts for each event
+  const eventIds = eventsWithCreator.map(e => e.id)
+  let categoryCounts: Record<string, number> = {}
+  
+  if (eventIds.length > 0) {
+    const { data: categoriesData, error: categoriesError } = await supabase
+      .from("categories")
+      .select("event_id, id")
+      .in("event_id", eventIds)
+      .eq("is_active", true)
+    
+    if (!categoriesError && categoriesData) {
+      categoryCounts = categoriesData.reduce((acc, cat) => {
+        acc[cat.event_id] = (acc[cat.event_id] || 0) + 1
+        return acc
+      }, {} as Record<string, number>)
+    }
+  }
+
   return {
-    data: eventsWithCreator.map(toEventListItem),
+    data: eventsWithCreator.map(event => ({
+      ...toEventListItem(event),
+      categories: categoryCounts[event.id] || 0,
+    })),
     total,
     page,
     limit,

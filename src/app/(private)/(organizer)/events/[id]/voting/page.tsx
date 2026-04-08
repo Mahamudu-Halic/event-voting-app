@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect } from "react"
 import { useParams } from "next/navigation"
+import { motion } from "framer-motion"
 import { toast } from "sonner"
 import {
     Trophy,
@@ -12,11 +13,16 @@ import {
     Crown,
     AlertCircle,
     Play,
-    Square, ChevronDown,
-    ChevronUp
+    Square,
+    ChevronDown,
+    ChevronUp,
+    Sparkles,
+    Zap,
+    Target,
+    Layers,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
@@ -119,209 +125,288 @@ export default function VotingPage() {
     })
   }
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.4, 0, 0.2, 1] as const } },
+  };
+
   if (loading) {
     return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <Skeleton className="h-8 w-48 bg-purple-accent/30" />
-          <Skeleton className="h-10 w-32 bg-purple-accent/30" />
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} className="h-32 bg-purple-accent/30" />
-          ))}
-        </div>
-        <Skeleton className="h-96 bg-purple-accent/30" />
+      <div className="min-h-screen bg-gradient-to-br from-violet-950 via-purple-950 to-purple-900 flex items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="flex flex-col items-center gap-4"
+        >
+          <div className="p-4 rounded-2xl bg-violet-500/20">
+            <Skeleton className="h-8 w-8 bg-violet-400/50" />
+          </div>
+          <p className="text-white/60">Loading voting data...</p>
+        </motion.div>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      className="space-y-8 min-h-screen bg-gradient-to-br from-violet-950 via-purple-950 to-purple-900 -m-6 p-6"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <motion.div variants={itemVariants} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-text-primary">Voting Results</h1>
-          <p className="text-text-secondary mt-1">
+          <div className="flex items-center gap-3">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-purple-200 to-purple-400 bg-clip-text text-transparent">
+              Voting Results
+            </h1>
+            <Badge className="bg-gradient-to-r from-violet-500/30 to-purple-500/30 text-purple-200 border-purple-500/40">
+              <Layers className="h-3 w-3 mr-1" />
+              {summary?.total_categories || 0} Categories
+            </Badge>
+          </div>
+          <p className="text-purple-200/70 mt-2 text-lg">
             Monitor voting progress and view results by category
           </p>
         </div>
-        <div className="flex gap-2">
-          {status?.has_voting_period && (
-            <Button
-              onClick={handleToggleVoting}
-              disabled={isUpdatingStatus}
-              variant={status?.is_voting_active ? "destructive" : "default"}
-              className={
-                status?.is_voting_active
-                  ? "bg-red-500 hover:bg-red-600"
-                  : "bg-green-500 hover:bg-green-600 text-white"
-              }
-            >
-              {isUpdatingStatus ? (
-                "Updating..."
-              ) : status?.is_voting_active ? (
-                <>
-                  <Square className="h-4 w-4 mr-2" />
-                  Stop Voting
-                </>
-              ) : (
-                <>
-                  <Play className="h-4 w-4 mr-2" />
-                  Start Voting
-                </>
-              )}
-            </Button>
+        <div className="flex gap-3 items-center">
+          {status?.approval_status === 'pending' && (
+            <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30 px-3 py-1.5">
+              <AlertCircle className="h-4 w-4 mr-1.5" />
+              Awaiting Approval
+            </Badge>
+          )}
+          {status?.has_voting_period && status?.approval_status !== 'pending' && (
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Button
+                onClick={handleToggleVoting}
+                disabled={isUpdatingStatus}
+                variant={status?.is_voting_active ? "destructive" : "default"}
+                className={
+                  status?.is_voting_active
+                    ? "h-12 bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white rounded-xl shadow-lg shadow-rose-500/25"
+                    : "h-12 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl shadow-lg shadow-emerald-500/25"
+                }
+              >
+                {isUpdatingStatus ? (
+                  "Updating..."
+                ) : status?.is_voting_active ? (
+                  <>
+                    <Square className="h-4 w-4 mr-2" />
+                    Stop Voting
+                  </>
+                ) : (
+                  <>
+                    <Play className="h-4 w-4 mr-2" />
+                    Start Voting
+                  </>
+                )}
+              </Button>
+            </motion.div>
           )}
         </div>
-      </div>
+      </motion.div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-purple-surface border-purple-accent/50">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-text-secondary">Total Votes</p>
-                <p className="text-3xl font-bold text-text-primary mt-1">
-                  {summary?.total_votes.toLocaleString() || 0}
-                </p>
-              </div>
-              <div className="p-3 bg-gold-primary/20 rounded-full">
-                <TrendingUp className="h-6 w-6 text-gold-primary" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      <motion.div variants={itemVariants}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <motion.div whileHover={{ y: -4, transition: { duration: 0.2 } }}>
+            <Card className="relative overflow-hidden bg-gradient-to-br from-purple-surface to-purple-surface/80 border-purple-accent/30 hover:border-purple-accent/60 transition-all duration-300 group">
+              <div className="absolute inset-0 bg-gradient-to-br from-violet-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <CardContent className="relative p-6">
+                <div className="flex items-start justify-between">
+                  <div className="space-y-3">
+                    <p className="text-text-secondary text-sm font-medium">Total Votes</p>
+                    <p className="text-3xl font-bold text-text-primary">
+                      {summary?.total_votes.toLocaleString() || 0}
+                    </p>
+                    <div className="flex items-center gap-1 text-xs">
+                      <TrendingUp className="h-3 w-3 text-emerald-400" />
+                      <span className="text-emerald-400 font-medium">Live</span>
+                    </div>
+                  </div>
+                  <div className="p-3 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 shadow-lg">
+                    <TrendingUp className="h-6 w-6 text-white" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-        <Card className="bg-purple-surface border-purple-accent/50">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-text-secondary">Categories</p>
-                <p className="text-3xl font-bold text-text-primary mt-1">
-                  {summary?.total_categories || 0}
-                </p>
-              </div>
-              <div className="p-3 bg-blue-500/20 rounded-full">
-                <BarChart3 className="h-6 w-6 text-blue-400" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+          <motion.div whileHover={{ y: -4, transition: { duration: 0.2 } }}>
+            <Card className="relative overflow-hidden bg-gradient-to-br from-purple-surface to-purple-surface/80 border-purple-accent/30 hover:border-purple-accent/60 transition-all duration-300 group">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <CardContent className="relative p-6">
+                <div className="flex items-start justify-between">
+                  <div className="space-y-3">
+                    <p className="text-text-secondary text-sm font-medium">Categories</p>
+                    <p className="text-3xl font-bold text-text-primary">
+                      {summary?.total_categories || 0}
+                    </p>
+                    <div className="flex items-center gap-1 text-xs">
+                      <span className="text-text-tertiary">Active categories</span>
+                    </div>
+                  </div>
+                  <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-lg">
+                    <BarChart3 className="h-6 w-6 text-white" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-        <Card className="bg-purple-surface border-purple-accent/50">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-text-secondary">Nominees</p>
-                <p className="text-3xl font-bold text-text-primary mt-1">
-                  {summary?.total_nominees || 0}
-                </p>
-              </div>
-              <div className="p-3 bg-purple-500/20 rounded-full">
-                <Users className="h-6 w-6 text-purple-400" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+          <motion.div whileHover={{ y: -4, transition: { duration: 0.2 } }}>
+            <Card className="relative overflow-hidden bg-gradient-to-br from-purple-surface to-purple-surface/80 border-purple-accent/30 hover:border-purple-accent/60 transition-all duration-300 group">
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <CardContent className="relative p-6">
+                <div className="flex items-start justify-between">
+                  <div className="space-y-3">
+                    <p className="text-text-secondary text-sm font-medium">Nominees</p>
+                    <p className="text-3xl font-bold text-text-primary">
+                      {summary?.total_nominees || 0}
+                    </p>
+                    <div className="flex items-center gap-1 text-xs">
+                      <span className="text-text-tertiary">Competing</span>
+                    </div>
+                  </div>
+                  <div className="p-3 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 shadow-lg">
+                    <Users className="h-6 w-6 text-white" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-        <Card className="bg-purple-surface border-purple-accent/50">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-text-secondary">Voting Status</p>
-                <Badge
-                  variant="secondary"
-                  className={`mt-1 ${
-                    status?.is_voting_active
-                      ? "bg-green-500/20 text-green-400 border-green-500/30"
-                      : "bg-red-500/20 text-red-400 border-red-500/30"
-                  }`}
-                >
-                  {status?.is_voting_active ? "Active" : "Inactive"}
-                </Badge>
-              </div>
-              <div className="p-3 bg-orange-500/20 rounded-full">
-                <Calendar className="h-6 w-6 text-orange-400" />
-              </div>
-            </div>
-            {status?.has_voting_period && (
-              <div className="mt-3 text-xs text-text-tertiary">
-                <p>Start: {formatDate(status.voting_start_date)}</p>
-                <p>End: {formatDate(status.voting_end_date)}</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+          <motion.div whileHover={{ y: -4, transition: { duration: 0.2 } }}>
+            <Card className="relative overflow-hidden bg-gradient-to-br from-purple-surface to-purple-surface/80 border-purple-accent/30 hover:border-purple-accent/60 transition-all duration-300 group">
+              <div className="absolute inset-0 bg-gradient-to-br from-amber-500/20 to-orange-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <CardContent className="relative p-6">
+                <div className="flex items-start justify-between">
+                  <div className="space-y-3">
+                    <p className="text-text-secondary text-sm font-medium">Voting Status</p>
+                    <Badge
+                      variant="secondary"
+                      className={`${
+                        status?.is_voting_active && status?.approval_status === 'approved'
+                          ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
+                          : status?.is_voting_active && status?.approval_status !== 'approved'
+                          ? "bg-amber-500/20 text-amber-300 border-amber-500/30"
+                          : "bg-rose-500/20 text-rose-300 border-rose-500/30"
+                      }`}
+                    >
+                      {status?.is_voting_active ? "Active" : "Inactive"}
+                    </Badge>
+                    {status?.has_voting_period && (
+                      <div className="text-xs text-text-tertiary mt-1">
+                        <p>Until {formatDate(status.voting_end_date)}</p>
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-3 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 shadow-lg">
+                    <Calendar className="h-6 w-6 text-white" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+      </motion.div>
 
       {/* Top Nominees */}
       {summary && summary.leading_nominees.length > 0 && (
-        <Card className="bg-purple-surface border-purple-accent/50">
-          <CardHeader>
-            <CardTitle className="text-text-primary flex items-center gap-2">
-              <Crown className="h-5 w-5 text-gold-primary" />
-              Top Nominees
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-              {summary.leading_nominees.map((nominee, index) => (
-                <div
-                  key={nominee.nominee_id}
-                  className="relative p-4 bg-purple-bg rounded-lg border border-purple-accent/30"
-                >
-                  {index === 0 && (
-                    <div className="absolute -top-2 -right-2">
-                      <Trophy className="h-6 w-6 text-gold-primary" />
-                    </div>
-                  )}
-                  <div className="flex flex-col items-center text-center">
-                    <Avatar className="h-16 w-16 border-2 border-gold-primary/50">
-                      <AvatarImage src={nominee.nominee_image_url || undefined} />
-                      <AvatarFallback className="bg-purple-accent/50 text-text-primary text-lg">
-                        {nominee.nominee_name
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")
-                          .toUpperCase()
-                          .slice(0, 2)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <p className="mt-2 font-medium text-text-primary truncate w-full">
-                      {nominee.nominee_name}
-                    </p>
-                    <Badge
-                      variant="secondary"
-                      className="mt-1 bg-purple-accent/30 text-text-secondary border-purple-accent/30"
-                    >
-                      {nominee.category_name}
-                    </Badge>
-                    <p className="mt-2 text-2xl font-bold text-gold-primary">
-                      {nominee.votes_count.toLocaleString()}
-                    </p>
-                    <p className="text-xs text-text-tertiary">votes</p>
-                  </div>
+        <motion.div variants={itemVariants}>
+          <Card className="bg-gradient-to-br from-violet-900/30 to-purple-900/30 border-violet-500/30">
+            <CardHeader className="flex flex-row items-center justify-between pb-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-amber-500/30">
+                  <Crown className="h-5 w-5 text-amber-300" />
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                <div>
+                  <CardTitle className="text-text-primary flex items-center gap-2">
+                    Top Nominees
+                  </CardTitle>
+                  <CardDescription className="text-text-secondary">
+                    Leading nominees across all categories
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                {summary.leading_nominees.map((nominee, index) => (
+                  <motion.div
+                    key={nominee.nominee_id}
+                    whileHover={{ y: -4 }}
+                    className={`relative p-5 rounded-2xl border ${
+                      index === 0 
+                        ? "bg-gradient-to-br from-amber-500/20 to-orange-500/20 border-amber-500/40" 
+                        : "bg-white/5 border-white/10"
+                    }`}
+                  >
+                    {index === 0 && (
+                      <div className="absolute -top-3 -right-3 p-2 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 shadow-lg">
+                        <Trophy className="h-5 w-5 text-white" />
+                      </div>
+                    )}
+                    <div className="flex flex-col items-center text-center">
+                      <Avatar className={`h-20 w-20 border-2 ${index === 0 ? "border-amber-500/50" : "border-violet-500/30"}`}>
+                        <AvatarImage src={nominee.nominee_image_url || undefined} />
+                        <AvatarFallback className="bg-violet-500/30 text-white text-lg font-semibold">
+                          {nominee.nominee_name
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")
+                            .toUpperCase()
+                            .slice(0, 2)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <p className="mt-3 font-semibold text-white truncate w-full">
+                        {nominee.nominee_name}
+                      </p>
+                      <Badge
+                        variant="outline"
+                        className="mt-2 bg-violet-500/20 border-violet-500/30 text-violet-300"
+                      >
+                        {nominee.category_name}
+                      </Badge>
+                      <p className={`mt-3 text-3xl font-bold ${index === 0 ? "text-amber-400" : "text-violet-400"}`}>
+                        {nominee.votes_count.toLocaleString()}
+                      </p>
+                      <p className="text-xs text-white/50">votes</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
       )}
 
       {/* Results by Category */}
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold text-text-primary">Results by Category</h2>
+      <motion.div variants={itemVariants} className="space-y-6">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-lg bg-violet-500/30">
+            <Target className="h-5 w-5 text-violet-300" />
+          </div>
+          <h2 className="text-2xl font-bold text-white">Results by Category</h2>
+        </div>
 
         {results.length === 0 ? (
-          <Card className="bg-purple-surface border-purple-accent/50">
+          <Card className="bg-gradient-to-br from-violet-900/30 to-purple-900/30 border-violet-500/30">
             <CardContent className="p-12 text-center">
-              <AlertCircle className="h-12 w-12 mx-auto mb-3 text-text-tertiary" />
-              <p className="text-lg font-medium text-text-primary">
+              <div className="p-4 rounded-2xl bg-violet-500/20 mb-4 inline-block">
+                <AlertCircle className="h-12 w-12 text-violet-400" />
+              </div>
+              <p className="text-xl font-semibold text-white">
                 No nominees found
               </p>
-              <p className="text-text-secondary mt-1">
+              <p className="text-purple-200/70 mt-2">
                 Add nominees to categories to start receiving votes
               </p>
             </CardContent>
@@ -333,29 +418,32 @@ export default function VotingPage() {
               open={expandedCategories.has(category.category_id)}
               onOpenChange={() => toggleCategory(category.category_id)}
             >
-              <Card className="bg-purple-surface border-purple-accent/50 overflow-hidden">
+              <Card className="bg-gradient-to-br from-violet-900/30 to-purple-900/30 border-violet-500/30 overflow-hidden">
                 <CollapsibleTrigger asChild>
-                  <CardHeader className="cursor-pointer hover:bg-purple-accent/10 transition-colors">
+                  <CardHeader className="cursor-pointer hover:bg-white/5 transition-colors">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <CardTitle className="text-text-primary text-lg">
+                        <div className="p-2 rounded-lg bg-violet-500/30">
+                          <Zap className="h-4 w-4 text-violet-300" />
+                        </div>
+                        <CardTitle className="text-white text-lg">
                           {category.category_name}
                         </CardTitle>
                         <Badge
-                          variant="secondary"
-                          className="bg-purple-accent/30 text-text-secondary"
+                          variant="outline"
+                          className="bg-violet-500/20 border-violet-500/30 text-violet-300"
                         >
                           {category.total_votes.toLocaleString()} votes
                         </Badge>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm text-text-secondary">
+                        <span className="text-sm text-white/60">
                           {category.nominees.length} nominees
                         </span>
                         {expandedCategories.has(category.category_id) ? (
-                          <ChevronUp className="h-5 w-5 text-text-secondary" />
+                          <ChevronUp className="h-5 w-5 text-white/60" />
                         ) : (
-                          <ChevronDown className="h-5 w-5 text-text-secondary" />
+                          <ChevronDown className="h-5 w-5 text-white/60" />
                         )}
                       </div>
                     </div>
@@ -364,35 +452,38 @@ export default function VotingPage() {
 
                 <CollapsibleContent>
                   <CardContent className="pt-0">
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                       {category.nominees.map((nominee, index) => (
-                        <div
+                        <motion.div
                           key={nominee.nominee_id}
-                          className={`p-4 rounded-lg ${
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.05 }}
+                          className={`p-4 rounded-xl ${
                             index === 0 && nominee.votes_count > 0
-                              ? "bg-gold-primary/10 border border-gold-primary/30"
-                              : "bg-purple-bg border border-purple-accent/30"
+                              ? "bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/40"
+                              : "bg-white/5 border border-white/10"
                           }`}
                         >
                           <div className="flex items-center gap-4">
                             <div className="shrink-0">
                               {index === 0 && nominee.votes_count > 0 ? (
-                                <div className="w-8 h-8 rounded-full bg-gold-primary flex items-center justify-center text-purple-bg font-bold">
+                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white font-bold">
                                   1
                                 </div>
                               ) : (
-                                <div className="w-8 h-8 rounded-full bg-purple-accent/50 flex items-center justify-center text-text-primary font-medium">
+                                <div className="w-8 h-8 rounded-full bg-violet-500/30 flex items-center justify-center text-white font-medium">
                                   {index + 1}
                                 </div>
                               )}
                             </div>
 
-                            <Avatar className="h-12 w-12 border border-purple-accent/30">
+                            <Avatar className="h-12 w-12 border-2 border-violet-500/30">
                               <AvatarImage
                                 src={nominee.nominee_image_url || undefined}
                                 alt={nominee.nominee_name}
                               />
-                              <AvatarFallback className="bg-purple-accent/50 text-text-primary">
+                              <AvatarFallback className="bg-violet-500/30 text-white font-semibold">
                                 {nominee.nominee_name
                                   .split(" ")
                                   .map((n) => n[0])
@@ -403,15 +494,15 @@ export default function VotingPage() {
                             </Avatar>
 
                             <div className="flex-1 min-w-0">
-                              <div className="flex items-center justify-between mb-1">
-                                <p className="font-medium text-text-primary truncate">
+                              <div className="flex items-center justify-between mb-2">
+                                <p className="font-semibold text-white truncate">
                                   {nominee.nominee_name}
                                 </p>
                                 <div className="text-right">
-                                  <p className="font-bold text-text-primary">
+                                  <p className="font-bold text-white">
                                     {nominee.votes_count.toLocaleString()}
                                   </p>
-                                  <p className="text-xs text-text-tertiary">
+                                  <p className="text-xs text-white/50">
                                     {category.total_votes > 0
                                       ? `${nominee.percentage}%`
                                       : "0%"}
@@ -419,18 +510,24 @@ export default function VotingPage() {
                                 </div>
                               </div>
 
-                              <div className="flex items-center gap-2">
-                                <Progress
-                                  value={nominee.percentage}
-                                  className="flex-1 h-2 bg-purple-accent/30"
-                                />
-                                <code className="text-xs text-gold-primary font-mono">
+                              <div className="flex items-center gap-3">
+                                <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
+                                  <motion.div
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${nominee.percentage}%` }}
+                                    transition={{ duration: 0.5, delay: 0.2 }}
+                                    className={`h-full rounded-full ${
+                                      index === 0 ? "bg-gradient-to-r from-amber-500 to-orange-500" : "bg-gradient-to-r from-violet-500 to-purple-500"
+                                    }`}
+                                  />
+                                </div>
+                                <code className="px-2 py-1 bg-violet-500/20 rounded text-xs text-violet-300 font-mono border border-violet-500/30">
                                   {nominee.unique_code}
                                 </code>
                               </div>
                             </div>
                           </div>
-                        </div>
+                        </motion.div>
                       ))}
                     </div>
                   </CardContent>
@@ -439,7 +536,7 @@ export default function VotingPage() {
             </Collapsible>
           ))
         )}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   )
 }

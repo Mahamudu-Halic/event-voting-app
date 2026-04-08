@@ -11,7 +11,7 @@ import {
   Edit2, 
   Calendar, 
   Settings, 
-  DollarSign, 
+  Coins, 
   Trophy,
   Users
 } from 'lucide-react'
@@ -153,13 +153,13 @@ export function Step4Review({ onEditStep }: Step4ReviewProps) {
         <Separator className="bg-purple-accent/30" />
 
         {/* Step 3: Pricing */}
-        <ReviewSection step={3} title="Pricing" icon={DollarSign}>
+        <ReviewSection step={3} title="Pricing" icon={Coins}>
           <div className="space-y-3 p-4 rounded-lg bg-purple-bg/50 border border-purple-accent/20">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <span className="text-xs text-text-secondary uppercase tracking-wider">Amount Per Vote</span>
                 <p className="text-text-primary font-medium text-lg">
-                  ${(formData.amountPerVote || 0).toFixed(2)}
+                  ₵{(formData.amountPerVote || 0).toFixed(2)}
                 </p>
               </div>
               <div>
@@ -172,11 +172,11 @@ export function Step4Review({ onEditStep }: Step4ReviewProps) {
             <Separator className="bg-purple-accent/20" />
             <div className="flex justify-between items-center">
               <span className="text-text-secondary">Service fee per vote:</span>
-              <span className="text-error">-${fees.serviceFeeAmount.toFixed(2)}</span>
+              <span className="text-error">-₵{fees.serviceFeeAmount.toFixed(2)}</span>
             </div>
             <div className="flex justify-between items-center font-semibold">
               <span className="text-text-primary">You receive per vote:</span>
-              <span className="text-success text-lg">${fees.organizerReceives.toFixed(2)}</span>
+              <span className="text-success text-lg">₵{fees.organizerReceives.toFixed(2)}</span>
             </div>
           </div>
         </ReviewSection>

@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { DollarSign, Percent, Info, Check } from 'lucide-react'
+import { Coins, Percent, Info, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export function Step3Pricing() {
@@ -38,7 +38,7 @@ export function Step3Pricing() {
     <Card className="bg-purple-surface border-purple-accent/50">
       <CardHeader>
         <CardTitle className="text-text-primary flex items-center gap-2">
-          <DollarSign className="h-5 w-5 text-gold-primary" />
+          <Coins className="h-5 w-5 text-gold-primary" />
           Pricing Settings
         </CardTitle>
         <CardDescription className="text-text-secondary">
@@ -52,7 +52,7 @@ export function Step3Pricing() {
             Amount Per Vote
           </Label>
           <div className="relative">
-            <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-purple-accent" />
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-lg font-semibold text-purple-accent">₵</span>
             <Input
               id="amountPerVote"
               type="number"
@@ -68,7 +68,7 @@ export function Step3Pricing() {
             <p className="text-sm text-error">{errors.amountPerVote.message}</p>
           )}
           <p className="text-xs text-text-secondary">
-            Minimum $0.10, maximum $1000.00 per vote
+            Minimum ₵0.10, maximum ₵1000.00 per vote
           </p>
         </div>
 
@@ -137,16 +137,16 @@ export function Step3Pricing() {
             <div className="space-y-2 text-sm">
               <div className="flex justify-between text-text-secondary">
                 <span>Amount per vote:</span>
-                <span className="text-text-primary">${amountPerVote.toFixed(2)}</span>
+                <span className="text-text-primary">₵{amountPerVote.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-text-secondary">
                 <span>Service fee ({serviceFee}%):</span>
-                <span className="text-error">-${fees.serviceFeeAmount.toFixed(2)}</span>
+                <span className="text-error">-₵{fees.serviceFeeAmount.toFixed(2)}</span>
               </div>
               <div className="border-t border-purple-accent/30 pt-2 mt-2">
                 <div className="flex justify-between font-semibold">
                   <span className="text-text-primary">You receive:</span>
-                  <span className="text-success">${fees.organizerReceives.toFixed(2)}</span>
+                  <span className="text-success">₵{fees.organizerReceives.toFixed(2)}</span>
                 </div>
               </div>
             </div>
@@ -159,9 +159,9 @@ export function Step3Pricing() {
           <div className="space-y-1">
             <p className="text-sm font-medium text-text-primary">How pricing works</p>
             <p className="text-sm text-text-secondary">
-              When a user pays ${amountPerVote.toFixed(2) || 'X.XX'} for a vote, 
-              you receive ${fees.organizerReceives.toFixed(2) || 'Y.YY'} and we retain 
-              ${fees.serviceFeeAmount.toFixed(2) || 'Z.ZZ'} as a service fee. 
+              When a user pays ₵{amountPerVote.toFixed(2) || 'X.XX'} for a vote, 
+              you receive ₵{fees.organizerReceives.toFixed(2) || 'Y.YY'} and we retain 
+              ₵{fees.serviceFeeAmount.toFixed(2) || 'Z.ZZ'} as a service fee. 
               Funds are transferred to your account weekly.
             </p>
           </div>

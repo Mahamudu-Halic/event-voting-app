@@ -34,6 +34,7 @@ import {
   Bell,
   Shield,
 } from 'lucide-react'
+import { signout } from '@/apis/auth'
 
 interface SidebarProps {
   user?: {
@@ -326,6 +327,7 @@ export function Sidebar({ user }: SidebarProps) {
               <Separator className="bg-purple-accent/30" />
               <Button 
                 variant="ghost" 
+                onClick={signout}
                 className="w-full justify-start text-error hover:text-error hover:bg-error/10"
               >
                 <LogOut className="mr-2 h-4 w-4" />

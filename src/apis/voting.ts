@@ -32,6 +32,7 @@ export interface VotingStatus {
   voting_start_date: string | null
   voting_end_date: string | null
   has_voting_period: boolean
+  approval_status: 'pending' | 'approved' | 'rejected'
 }
 
 // Get voting results for an event grouped by category
@@ -203,7 +204,7 @@ export async function getVotingStatus(eventId: string): Promise<VotingStatus> {
 
   const { data, error } = await supabase
     .from("events")
-    .select("voting_start_date, voting_end_date")
+    .select("voting_start_date, voting_end_date, approval_status")
     .eq("id", eventId)
     .single()
 
@@ -227,6 +228,7 @@ export async function getVotingStatus(eventId: string): Promise<VotingStatus> {
     voting_start_date: data.voting_start_date,
     voting_end_date: data.voting_end_date,
     has_voting_period,
+    approval_status: data.approval_status,
   }
 }
 

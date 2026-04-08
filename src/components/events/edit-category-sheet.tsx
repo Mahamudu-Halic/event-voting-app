@@ -1,13 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { Edit2, Loader2, X } from 'lucide-react'
+import { Edit2, Loader2} from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import {
   Sheet,
   SheetContent,
@@ -25,7 +24,6 @@ interface EditCategorySheetProps {
   eventId: string
   defaultValues: {
     categoryName: string
-    categoryDescription?: string | null
   }
   onSuccess?: () => void
 }
@@ -43,7 +41,6 @@ export function EditCategorySheet({ categoryId, eventId, defaultValues, onSucces
     resolver: zodResolver(categoryFormSchema),
     defaultValues: {
       categoryName: defaultValues.categoryName,
-      categoryDescription: defaultValues.categoryDescription || '',
     },
   })
 
@@ -57,7 +54,6 @@ export function EditCategorySheet({ categoryId, eventId, defaultValues, onSucces
     try {
       await updateCategory(categoryId, {
         categoryName: data.categoryName,
-        categoryDescription: data.categoryDescription || null,
       })
       toast.success('Category updated successfully')
       setIsOpen(false)
@@ -103,23 +99,6 @@ export function EditCategorySheet({ categoryId, eventId, defaultValues, onSucces
             />
             {errors.categoryName && (
               <p className="text-sm text-error">{errors.categoryName.message}</p>
-            )}
-          </div>
-
-          {/* Category Description */}
-          <div className="space-y-2">
-            <Label htmlFor="categoryDescription" className="text-text-primary">
-              Description
-            </Label>
-            <Textarea
-              id="categoryDescription"
-              {...register('categoryDescription')}
-              rows={3}
-              className="bg-purple-bg border-purple-accent/30 text-text-primary resize-none"
-              placeholder="Describe what this category is about..."
-            />
-            {errors.categoryDescription && (
-              <p className="text-sm text-error">{errors.categoryDescription.message}</p>
             )}
           </div>
 
