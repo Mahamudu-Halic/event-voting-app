@@ -137,7 +137,7 @@ export default function VotingPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-violet-950 via-purple-950 to-purple-900 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-violet-950 via-purple-950 to-purple-900 flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -154,7 +154,7 @@ export default function VotingPage() {
 
   return (
     <motion.div
-      className="space-y-8 min-h-screen bg-gradient-to-br from-violet-950 via-purple-950 to-purple-900 -m-6 p-6"
+      className="space-y-8 min-h-screen bg-linear-to-br from-violet-950 via-purple-950 to-purple-900 -m-6 p-6"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
@@ -163,10 +163,10 @@ export default function VotingPage() {
       <motion.div variants={itemVariants} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-purple-200 to-purple-400 bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold bg-linear-to-r from-white via-purple-200 to-purple-400 bg-clip-text text-transparent">
               Voting Results
             </h1>
-            <Badge className="bg-gradient-to-r from-violet-500/30 to-purple-500/30 text-purple-200 border-purple-500/40">
+            <Badge className="bg-linear-to-r from-violet-500/30 to-purple-500/30 text-purple-200 border-purple-500/40">
               <Layers className="h-3 w-3 mr-1" />
               {summary?.total_categories || 0} Categories
             </Badge>
@@ -190,8 +190,8 @@ export default function VotingPage() {
                 variant={status?.is_voting_active ? "destructive" : "default"}
                 className={
                   status?.is_voting_active
-                    ? "h-12 bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white rounded-xl shadow-lg shadow-rose-500/25"
-                    : "h-12 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl shadow-lg shadow-emerald-500/25"
+                    ? "h-12 bg-linear-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white rounded-xl shadow-lg shadow-rose-500/25"
+                    : "h-12 bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl shadow-lg shadow-emerald-500/25"
                 }
               >
                 {isUpdatingStatus ? (
@@ -217,8 +217,8 @@ export default function VotingPage() {
       <motion.div variants={itemVariants}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <motion.div whileHover={{ y: -4, transition: { duration: 0.2 } }}>
-            <Card className="relative overflow-hidden bg-gradient-to-br from-purple-surface to-purple-surface/80 border-purple-accent/30 hover:border-purple-accent/60 transition-all duration-300 group">
-              <div className="absolute inset-0 bg-gradient-to-br from-violet-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <Card className="relative overflow-hidden bg-linear-to-br from-purple-surface to-purple-surface/80 border-purple-accent/30 hover:border-purple-accent/60 transition-all duration-300 group">
+              <div className="absolute inset-0 bg-linear-to-br from-violet-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <CardContent className="relative p-6">
                 <div className="flex items-start justify-between">
                   <div className="space-y-3">
@@ -231,7 +231,7 @@ export default function VotingPage() {
                       <span className="text-emerald-400 font-medium">Live</span>
                     </div>
                   </div>
-                  <div className="p-3 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 shadow-lg">
+                  <div className="p-3 rounded-xl bg-linear-to-br from-violet-500 to-purple-600 shadow-lg">
                     <TrendingUp className="h-6 w-6 text-white" />
                   </div>
                 </div>
@@ -240,8 +240,8 @@ export default function VotingPage() {
           </motion.div>
 
           <motion.div whileHover={{ y: -4, transition: { duration: 0.2 } }}>
-            <Card className="relative overflow-hidden bg-gradient-to-br from-purple-surface to-purple-surface/80 border-purple-accent/30 hover:border-purple-accent/60 transition-all duration-300 group">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <Card className="relative overflow-hidden bg-linear-to-br from-purple-surface to-purple-surface/80 border-purple-accent/30 hover:border-purple-accent/60 transition-all duration-300 group">
+              <div className="absolute inset-0 bg-linear-to-br from-blue-500/20 to-cyan-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <CardContent className="relative p-6">
                 <div className="flex items-start justify-between">
                   <div className="space-y-3">
@@ -253,7 +253,7 @@ export default function VotingPage() {
                       <span className="text-text-tertiary">Active categories</span>
                     </div>
                   </div>
-                  <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-lg">
+                  <div className="p-3 rounded-xl bg-linear-to-br from-blue-500 to-cyan-500 shadow-lg">
                     <BarChart3 className="h-6 w-6 text-white" />
                   </div>
                 </div>
@@ -262,8 +262,8 @@ export default function VotingPage() {
           </motion.div>
 
           <motion.div whileHover={{ y: -4, transition: { duration: 0.2 } }}>
-            <Card className="relative overflow-hidden bg-gradient-to-br from-purple-surface to-purple-surface/80 border-purple-accent/30 hover:border-purple-accent/60 transition-all duration-300 group">
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <Card className="relative overflow-hidden bg-linear-to-br from-purple-surface to-purple-surface/80 border-purple-accent/30 hover:border-purple-accent/60 transition-all duration-300 group">
+              <div className="absolute inset-0 bg-linear-to-br from-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <CardContent className="relative p-6">
                 <div className="flex items-start justify-between">
                   <div className="space-y-3">
@@ -275,7 +275,7 @@ export default function VotingPage() {
                       <span className="text-text-tertiary">Competing</span>
                     </div>
                   </div>
-                  <div className="p-3 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 shadow-lg">
+                  <div className="p-3 rounded-xl bg-linear-to-br from-purple-500 to-pink-500 shadow-lg">
                     <Users className="h-6 w-6 text-white" />
                   </div>
                 </div>
@@ -284,8 +284,8 @@ export default function VotingPage() {
           </motion.div>
 
           <motion.div whileHover={{ y: -4, transition: { duration: 0.2 } }}>
-            <Card className="relative overflow-hidden bg-gradient-to-br from-purple-surface to-purple-surface/80 border-purple-accent/30 hover:border-purple-accent/60 transition-all duration-300 group">
-              <div className="absolute inset-0 bg-gradient-to-br from-amber-500/20 to-orange-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <Card className="relative overflow-hidden bg-linear-to-br from-purple-surface to-purple-surface/80 border-purple-accent/30 hover:border-purple-accent/60 transition-all duration-300 group">
+              <div className="absolute inset-0 bg-linear-to-br from-amber-500/20 to-orange-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <CardContent className="relative p-6">
                 <div className="flex items-start justify-between">
                   <div className="space-y-3">
@@ -308,7 +308,7 @@ export default function VotingPage() {
                       </div>
                     )}
                   </div>
-                  <div className="p-3 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 shadow-lg">
+                  <div className="p-3 rounded-xl bg-linear-to-br from-amber-500 to-orange-500 shadow-lg">
                     <Calendar className="h-6 w-6 text-white" />
                   </div>
                 </div>
@@ -321,7 +321,7 @@ export default function VotingPage() {
       {/* Top Nominees */}
       {summary && summary.leading_nominees.length > 0 && (
         <motion.div variants={itemVariants}>
-          <Card className="bg-gradient-to-br from-violet-900/30 to-purple-900/30 border-violet-500/30">
+          <Card className="bg-linear-to-br from-violet-900/30 to-purple-900/30 border-violet-500/30">
             <CardHeader className="flex flex-row items-center justify-between pb-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-amber-500/30">
@@ -345,12 +345,12 @@ export default function VotingPage() {
                     whileHover={{ y: -4 }}
                     className={`relative p-5 rounded-2xl border ${
                       index === 0 
-                        ? "bg-gradient-to-br from-amber-500/20 to-orange-500/20 border-amber-500/40" 
+                        ? "bg-linear-to-br from-amber-500/20 to-orange-500/20 border-amber-500/40" 
                         : "bg-white/5 border-white/10"
                     }`}
                   >
                     {index === 0 && (
-                      <div className="absolute -top-3 -right-3 p-2 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 shadow-lg">
+                      <div className="absolute -top-3 -right-3 p-2 rounded-xl bg-linear-to-br from-amber-500 to-orange-500 shadow-lg">
                         <Trophy className="h-5 w-5 text-white" />
                       </div>
                     )}
@@ -398,7 +398,7 @@ export default function VotingPage() {
         </div>
 
         {results.length === 0 ? (
-          <Card className="bg-gradient-to-br from-violet-900/30 to-purple-900/30 border-violet-500/30">
+          <Card className="bg-linear-to-br from-violet-900/30 to-purple-900/30 border-violet-500/30">
             <CardContent className="p-12 text-center">
               <div className="p-4 rounded-2xl bg-violet-500/20 mb-4 inline-block">
                 <AlertCircle className="h-12 w-12 text-violet-400" />
@@ -418,7 +418,7 @@ export default function VotingPage() {
               open={expandedCategories.has(category.category_id)}
               onOpenChange={() => toggleCategory(category.category_id)}
             >
-              <Card className="bg-gradient-to-br from-violet-900/30 to-purple-900/30 border-violet-500/30 overflow-hidden">
+              <Card className="bg-linear-to-br from-violet-900/30 to-purple-900/30 border-violet-500/30 overflow-hidden">
                 <CollapsibleTrigger asChild>
                   <CardHeader className="cursor-pointer hover:bg-white/5 transition-colors">
                     <div className="flex items-center justify-between">
@@ -461,14 +461,14 @@ export default function VotingPage() {
                           transition={{ delay: index * 0.05 }}
                           className={`p-4 rounded-xl ${
                             index === 0 && nominee.votes_count > 0
-                              ? "bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/40"
+                              ? "bg-linear-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/40"
                               : "bg-white/5 border border-white/10"
                           }`}
                         >
                           <div className="flex items-center gap-4">
                             <div className="shrink-0">
                               {index === 0 && nominee.votes_count > 0 ? (
-                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white font-bold">
+                                <div className="w-8 h-8 rounded-full bg-linear-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white font-bold">
                                   1
                                 </div>
                               ) : (
@@ -517,7 +517,7 @@ export default function VotingPage() {
                                     animate={{ width: `${nominee.percentage}%` }}
                                     transition={{ duration: 0.5, delay: 0.2 }}
                                     className={`h-full rounded-full ${
-                                      index === 0 ? "bg-gradient-to-r from-amber-500 to-orange-500" : "bg-gradient-to-r from-violet-500 to-purple-500"
+                                      index === 0 ? "bg-linear-to-r from-amber-500 to-orange-500" : "bg-linear-to-r from-violet-500 to-purple-500"
                                     }`}
                                   />
                                 </div>

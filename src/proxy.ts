@@ -1,7 +1,6 @@
 "use server";
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { request } from "node:https";
 
 export async function proxy(req: NextRequest) {
   let res = NextResponse.next();
@@ -31,6 +30,13 @@ export async function proxy(req: NextRequest) {
 
   const { error, data } = await supabase.auth.getClaims();
   const claims = data?.claims;
+  const userId = claims?.sub;
+  // Only fetch profile if we have a logged-in user
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", userId)
+    .single();
 
   const isAuthPage = req.nextUrl.pathname.startsWith("/auth");
 
@@ -38,8 +44,11 @@ export async function proxy(req: NextRequest) {
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
-  if(claims?.user_metadata?.role !== "admin" && req.nextUrl.pathname.startsWith("/admin")){
-    return NextResponse.redirect(new URL("/dashboard", req.url))
+  if (
+    profile?.role !== "admin" &&
+    req.nextUrl.pathname.startsWith("/admin")
+  ) {
+    return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
   if ((error || !claims) && !isAuthPage) {

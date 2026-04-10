@@ -113,15 +113,21 @@ export async function getAllEvents(
   params: EventQueryParams = { page: 1, limit: DEFAULT_PAGE_SIZE }
 ): Promise<PaginatedResult<EventListItem>> {
   const supabase = await createClient()
-  
+
   // Get current user and check if admin
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) {
     throw new Error("Not authenticated")
   }
 
-  const userRole = user.user_metadata?.role
-  if (userRole !== "admin") {
+  // Get role from profiles table
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single()
+
+  if (profile?.role !== "admin") {
     throw new Error("Unauthorized: Admin access required")
   }
 
@@ -129,16 +135,10 @@ export async function getAllEvents(
   const from = (page - 1) * limit
   const to = from + limit - 1
 
-  // Build query with creator info
+  // Build query
   let query = supabase
     .from("events")
-    .select(`
-      *,
-      creator:auth.users!inner(
-        raw_user_meta_data,
-        email
-      )
-    `, { count: "exact" })
+    .select("*", { count: "exact" })
     .eq("is_active", true)
 
   // Apply filters
@@ -177,14 +177,24 @@ export async function getAllEvents(
   const total = count || 0
   const totalPages = Math.ceil(total / limit)
 
+  // Get unique creator IDs to fetch profiles
+  const creatorIds = [...new Set((data || []).map(e => e.created_by))]
+
+  // Fetch creator profiles
+  const { data: creatorsData } = await supabase
+    .from("profiles")
+    .select("id, email")
+    .in("id", creatorIds)
+
+  const creatorsMap = new Map(creatorsData?.map(c => [c.id, c]) || [])
+
   // Transform data to include creator info
   const eventsWithCreator: EventWithCreator[] = (data || []).map((item) => {
     const rawEvent = item as unknown as Event
-    const creator = (item as { creator?: { raw_user_meta_data?: { first_name?: string; last_name?: string }; email?: string } }).creator
-    const meta = creator?.raw_user_meta_data || {}
+    const creator = creatorsMap.get(rawEvent.created_by)
     return {
       ...rawEvent,
-      creator_name: `${meta.first_name || ""} ${meta.last_name || ""}`.trim(),
+      creator_name: creator?.email?.split('@')[0] || "Unknown",
       creator_email: creator?.email || "",
     }
   })
@@ -310,6 +320,79 @@ export async function deleteEvent(eventId: string): Promise<void> {
   // Check if any rows were actually updated
   if (!data || data.length === 0) {
     throw new Error("Failed to delete event. Only pending events can be deleted, or you may not have permission.")
+  }
+}
+
+// Admin: Approve an event
+export async function approveEvent(eventId: string): Promise<void> {
+  const supabase = await createClient()
+
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    throw new Error("Not authenticated")
+  }
+
+  // Verify admin role from profiles
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single()
+
+  if (profile?.role !== "admin") {
+    throw new Error("Unauthorized: Admin access required")
+  }
+
+  const { error } = await supabase
+    .from("events")
+    .update({
+      approval_status: "approved",
+      approved_by: user.id,
+      approved_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    })
+    .eq("id", eventId)
+
+  if (error) {
+    console.error("Error approving event:", error)
+    throw new Error("Failed to approve event. " + error.message)
+  }
+}
+
+// Admin: Reject an event
+export async function rejectEvent(eventId: string, reason?: string): Promise<void> {
+  const supabase = await createClient()
+
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    throw new Error("Not authenticated")
+  }
+
+  // Verify admin role from profiles
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single()
+
+  if (profile?.role !== "admin") {
+    throw new Error("Unauthorized: Admin access required")
+  }
+
+  const { error } = await supabase
+    .from("events")
+    .update({
+      approval_status: "rejected",
+      approved_by: user.id,
+      approved_at: new Date().toISOString(),
+      rejection_reason: reason || null,
+      updated_at: new Date().toISOString()
+    })
+    .eq("id", eventId)
+
+  if (error) {
+    console.error("Error rejecting event:", error)
+    throw new Error("Failed to reject event. " + error.message)
   }
 }
 

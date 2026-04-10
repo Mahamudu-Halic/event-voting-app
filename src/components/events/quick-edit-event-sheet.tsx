@@ -150,10 +150,10 @@ export function QuickEditEventSheet({
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent className="w-full sm:max-w-lg bg-gradient-to-br from-violet-950 via-purple-950 to-purple-900 border-violet-500/30 overflow-y-auto">
+      <SheetContent className="w-full sm:max-w-lg bg-linear-to-br from-violet-950 via-purple-950 to-purple-900 border-violet-500/30 overflow-y-auto">
         <SheetHeader className="space-y-3 pb-6 border-b border-white/10">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600">
+            <div className="p-2 rounded-xl bg-linear-to-br from-violet-500 to-purple-600">
               <Sparkles className="h-5 w-5 text-white" />
             </div>
             <SheetTitle className="text-2xl font-bold text-white">Quick Edit Event</SheetTitle>
@@ -183,7 +183,7 @@ export function QuickEditEventSheet({
                     fill
                     className="object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                  <div className="absolute inset-0 bg-linear-to-t from-black/50 to-transparent" />
                   <button
                     type="button"
                     onClick={clearImage}
@@ -351,7 +351,7 @@ export function QuickEditEventSheet({
             </Button>
             <Button
               type="submit"
-              className="flex-1 h-12 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white rounded-xl shadow-lg shadow-violet-500/25 transition-all"
+              className="flex-1 h-12 bg-linear-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white rounded-xl shadow-lg shadow-violet-500/25 transition-all"
               disabled={isSaving || isUploading}
             >
               {isSaving || isUploading ? (

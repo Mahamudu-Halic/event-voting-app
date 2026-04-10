@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -13,6 +14,7 @@ import { Label } from '@/components/ui/label'
 import { Loader2, Lock, ArrowLeft, CheckCircle, Eye, EyeOff } from 'lucide-react'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
+import { motion } from 'framer-motion'
 
 const resetPasswordSchema = z.object({
   password: z.string().min(6, 'Password must be at least 6 characters'),
@@ -71,145 +73,183 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-purple-bg">
-      <Card className="w-full max-w-md bg-purple-surface border-purple-accent/50">
-        <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl font-bold text-text-primary">
-            Reset Password
-          </CardTitle>
-          <CardDescription className="text-text-secondary">
-            {isSubmitted
-              ? 'Your password has been reset'
-              : hasToken
-              ? 'Enter your new password below'
-              : 'Invalid or expired reset link'}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {isSubmitted ? (
-            <div className="text-center space-y-4">
-              <div className="w-16 h-16 rounded-full bg-success/20 flex items-center justify-center mx-auto">
-                <CheckCircle className="h-8 w-8 text-success" />
-              </div>
-              <p className="text-text-secondary">
-                Your password has been reset successfully. You will be redirected to the login page.
-              </p>
-              <Button
-                variant="outline"
-                className="w-full border-purple-accent/30 text-text-primary hover:bg-purple-accent/20"
-                asChild
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-purple-bg via-purple-surface/50 to-purple-bg px-4 py-12">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-1/2 -right-1/2 w-full h-full bg-linear-to-b from-violet-500/10 to-transparent rounded-full blur-3xl" />
+        <div className="absolute -bottom-1/2 -left-1/2 w-full h-full bg-linear-to-t from-purple-500/10 to-transparent rounded-full blur-3xl" />
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] as const }}
+        className="relative z-10 w-full max-w-md"
+      >
+        <Card className="bg-purple-surface/80 backdrop-blur-xl border-purple-accent/30 shadow-2xl shadow-violet-500/10">
+          <CardHeader className="space-y-4 text-center pb-6">
+            <Link href="/" className="inline-block mx-auto">
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="w-16 h-16 mx-auto bg-linear-to-br from-violet-500/20 to-purple-500/20 rounded-2xl flex items-center justify-center border border-purple-accent/30"
               >
-                <Link href="/auth/login">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Go to Login
-                </Link>
-              </Button>
+                <Image
+                  src="/logo.png"
+                  alt="Tomame"
+                  width={40}
+                  height={40}
+                  className="object-contain"
+                />
+              </motion.div>
+            </Link>
+            <div className="space-y-1">
+              <CardTitle className="text-2xl font-bold text-white">
+                Reset Password
+              </CardTitle>
+              <CardDescription className="text-purple-200/70">
+                {isSubmitted
+                  ? 'Your password has been reset'
+                  : hasToken
+                  ? 'Enter your new password below'
+                  : 'Invalid or expired reset link'}
+              </CardDescription>
             </div>
-          ) : !hasToken ? (
-            <div className="text-center space-y-4">
-              <p className="text-text-secondary">
-                The password reset link is invalid or has expired. Please request a new one.
-              </p>
-              <Button
-                className="w-full bg-gold-primary hover:bg-gold-dark text-text-tertiary"
-                asChild
-              >
-                <Link href="/auth/forgot-password">
-                  Request New Link
-                </Link>
-              </Button>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-text-primary">
-                  New Password
-                </Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-secondary" />
-                  <Input
-                    id="password"
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="Enter new password"
-                    className="pl-10 pr-10 bg-purple-bg border-purple-accent/30 text-text-primary placeholder:text-text-secondary"
-                    {...register('password')}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary hover:text-text-primary"
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </button>
-                </div>
-                {errors.password && (
-                  <p className="text-sm text-error">{errors.password.message}</p>
-                )}
+          </CardHeader>
+
+          <CardContent className="space-y-4">
+            {isSubmitted ? (
+              <div className="text-center space-y-4">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                  className="w-20 h-20 mx-auto bg-linear-to-br from-green-500/20 to-emerald-500/20 rounded-full flex items-center justify-center border border-green-500/30"
+                >
+                  <CheckCircle className="h-10 w-10 text-green-400" />
+                </motion.div>
+                <p className="text-purple-200/70">
+                  Your password has been reset successfully. You will be redirected to the login page.
+                </p>
+                <Button
+                  variant="outline"
+                  className="w-full border-purple-accent/30 text-purple-100 hover:bg-purple-accent/20 hover:text-white"
+                  asChild
+                >
+                  <Link href="/auth/login">
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Go to Login
+                  </Link>
+                </Button>
               </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword" className="text-text-primary">
-                  Confirm Password
-                </Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-secondary" />
-                  <Input
-                    id="confirmPassword"
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    placeholder="Confirm new password"
-                    className="pl-10 pr-10 bg-purple-bg border-purple-accent/30 text-text-primary placeholder:text-text-secondary"
-                    {...register('confirmPassword')}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary hover:text-text-primary"
-                  >
-                    {showConfirmPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </button>
+            ) : !hasToken ? (
+              <div className="text-center space-y-4">
+                <div className="w-20 h-20 mx-auto bg-linear-to-br from-red-500/20 to-orange-500/20 rounded-full flex items-center justify-center border border-red-500/30">
+                  <Lock className="h-10 w-10 text-red-400" />
                 </div>
-                {errors.confirmPassword && (
-                  <p className="text-sm text-error">{errors.confirmPassword.message}</p>
-                )}
+                <p className="text-purple-200/70">
+                  The password reset link is invalid or has expired. Please request a new one.
+                </p>
+                <Button
+                  className="w-full bg-linear-to-r from-gold-primary to-gold-dark text-purple-bg hover:opacity-90 font-semibold shadow-lg shadow-gold-primary/25"
+                  asChild
+                >
+                  <Link href="/auth/forgot-password">
+                    Request New Link
+                  </Link>
+                </Button>
               </div>
+            ) : (
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="password" className="text-purple-100">
+                    New Password
+                  </Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-purple-300/50" />
+                    <Input
+                      id="password"
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="Enter new password"
+                      className="pl-10 pr-10 bg-purple-bg/50 border-purple-accent/30 text-white placeholder:text-purple-300/40 focus:border-gold-primary focus:ring-gold-primary/20"
+                      {...register('password')}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-purple-300/50 hover:text-purple-200 transition-colors"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </button>
+                  </div>
+                  {errors.password && (
+                    <p className="text-sm text-red-400">{errors.password.message}</p>
+                  )}
+                </div>
 
-              <Button
-                type="submit"
-                className="w-full bg-gold-primary hover:bg-gold-dark text-text-tertiary"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Resetting...
-                  </>
-                ) : (
-                  'Reset Password'
-                )}
-              </Button>
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword" className="text-purple-100">
+                    Confirm Password
+                  </Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-purple-300/50" />
+                    <Input
+                      id="confirmPassword"
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      placeholder="Confirm new password"
+                      className="pl-10 pr-10 bg-purple-bg/50 border-purple-accent/30 text-white placeholder:text-purple-300/40 focus:border-gold-primary focus:ring-gold-primary/20"
+                      {...register('confirmPassword')}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-purple-300/50 hover:text-purple-200 transition-colors"
+                    >
+                      {showConfirmPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </button>
+                  </div>
+                  {errors.confirmPassword && (
+                    <p className="text-sm text-red-400">{errors.confirmPassword.message}</p>
+                  )}
+                </div>
 
-              <Button
-                variant="ghost"
-                className="w-full text-text-secondary hover:text-text-primary"
-                asChild
-              >
-                <Link href="/auth/login">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to Login
-                </Link>
-              </Button>
-            </form>
-          )}
-        </CardContent>
-      </Card>
+                <Button
+                  type="submit"
+                  className="w-full bg-linear-to-r from-gold-primary to-gold-dark text-purple-bg hover:opacity-90 font-semibold shadow-lg shadow-gold-primary/25"
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Resetting...
+                    </>
+                  ) : (
+                    'Reset Password'
+                  )}
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  className="w-full text-purple-200/60 hover:text-purple-100"
+                  asChild
+                >
+                  <Link href="/auth/login">
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Back to Login
+                  </Link>
+                </Button>
+              </form>
+            )}
+          </CardContent>
+        </Card>
+      </motion.div>
     </div>
   )
 }

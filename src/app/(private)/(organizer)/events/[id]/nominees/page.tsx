@@ -189,7 +189,7 @@ export default function NomineesPage() {
 
   return (
     <motion.div
-      className="space-y-8 min-h-screen bg-gradient-to-br from-violet-950 via-purple-950 to-purple-900 -m-6 p-6"
+      className="space-y-8 min-h-screen bg-linear-to-br from-violet-950 via-purple-950 to-purple-900 -m-6 p-6"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
@@ -198,10 +198,10 @@ export default function NomineesPage() {
       <motion.div variants={itemVariants} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-purple-200 to-purple-400 bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold bg-linear-to-r from-white via-purple-200 to-purple-400 bg-clip-text text-transparent">
               Nominees
             </h1>
-            <Badge className="bg-gradient-to-r from-violet-500/30 to-purple-500/30 text-purple-200 border-purple-500/40">
+            <Badge className="bg-linear-to-r from-violet-500/30 to-purple-500/30 text-purple-200 border-purple-500/40">
               <Layers className="h-3 w-3 mr-1" />
               {total} Total
             </Badge>
@@ -213,7 +213,7 @@ export default function NomineesPage() {
         <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
           <Button
             onClick={handleAddClick}
-            className="h-12 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white rounded-xl shadow-lg shadow-violet-500/25"
+            className="h-12 bg-linear-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white rounded-xl shadow-lg shadow-violet-500/25"
           >
             <Plus className="h-5 w-5 mr-2" />
             Add Nominee
@@ -223,7 +223,7 @@ export default function NomineesPage() {
 
       {/* Filters */}
       <motion.div variants={itemVariants}>
-        <Card className="bg-gradient-to-br from-violet-900/30 to-purple-900/30 border-violet-500/30">
+        <Card className="bg-linear-to-br from-violet-900/30 to-purple-900/30 border-violet-500/30">
           <CardContent className="p-5">
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="relative flex-1">
@@ -268,7 +268,7 @@ export default function NomineesPage() {
 
       {/* Table */}
       <motion.div variants={itemVariants}>
-        <Card className="bg-gradient-to-br from-violet-900/30 to-purple-900/30 border-violet-500/30 overflow-hidden">
+        <Card className="bg-linear-to-br from-violet-900/30 to-purple-900/30 border-violet-500/30 overflow-hidden">
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
@@ -464,7 +464,7 @@ export default function NomineesPage() {
 
       {/* Delete Dialog */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent className="bg-gradient-to-br from-violet-950 to-purple-900 border-violet-500/30 rounded-2xl">
+        <DialogContent className="bg-linear-to-br from-violet-950 to-purple-900 border-violet-500/30 rounded-2xl">
           <DialogHeader>
             <div className="flex items-center gap-3 mb-2">
               <div className="p-2 rounded-xl bg-rose-500/20">
@@ -488,7 +488,7 @@ export default function NomineesPage() {
             <Button
               onClick={executeDelete}
               disabled={isDeleting}
-              className="h-12 px-6 bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white rounded-xl shadow-lg shadow-rose-500/25 transition-all"
+              className="h-12 px-6 bg-linear-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white rounded-xl shadow-lg shadow-rose-500/25 transition-all"
             >
               {isDeleting ? "Deleting..." : "Delete"}
             </Button>

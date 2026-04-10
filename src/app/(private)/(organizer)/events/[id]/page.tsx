@@ -186,7 +186,7 @@ export default function EventDetailsPage({ params }: PageProps) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-violet-950 via-purple-950 to-purple-900 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-violet-950 via-purple-950 to-purple-900 flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -203,7 +203,7 @@ export default function EventDetailsPage({ params }: PageProps) {
 
   if (!event) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-violet-950 via-purple-950 to-purple-900 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-violet-950 via-purple-950 to-purple-900 flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -221,7 +221,7 @@ export default function EventDetailsPage({ params }: PageProps) {
 
   return (
     <motion.div
-      className="min-h-screen bg-gradient-to-br from-violet-950 via-purple-950 to-purple-900"
+      className="min-h-screen bg-linear-to-br from-violet-950 via-purple-950 to-purple-900"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
@@ -229,7 +229,7 @@ export default function EventDetailsPage({ params }: PageProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header Section */}
         <motion.div variants={itemVariants}>
-          <Card className="bg-gradient-to-br from-violet-900/50 to-purple-900/50 border-violet-500/30 mb-8 overflow-hidden">
+          <Card className="bg-linear-to-br from-violet-900/50 to-purple-900/50 border-violet-500/30 mb-8 overflow-hidden">
             <CardContent className="p-6">
               <div className="flex flex-col md:flex-row gap-6">
                 {/* Event Image */}
@@ -246,7 +246,7 @@ export default function EventDetailsPage({ params }: PageProps) {
                       <Trophy className="h-12 w-12 text-violet-400" />
                     </div>
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                  <div className="absolute inset-0 bg-linear-to-t from-black/50 to-transparent" />
                   <div className="absolute bottom-3 left-3">
                     <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-sm">
                       <Calendar className="h-3 w-3 mr-1" />
@@ -260,10 +260,10 @@ export default function EventDetailsPage({ params }: PageProps) {
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="flex items-center gap-3 mb-2">
-                        <h1 className="text-3xl font-bold bg-gradient-to-r from-white via-purple-200 to-purple-400 bg-clip-text text-transparent">
+                        <h1 className="text-3xl font-bold bg-linear-to-r from-white via-purple-200 to-purple-400 bg-clip-text text-transparent">
                           {event.event_name}
                         </h1>
-                        <Badge className="bg-gradient-to-r from-violet-500/30 to-purple-500/30 text-purple-200 border-purple-500/40">
+                        <Badge className="bg-linear-to-r from-violet-500/30 to-purple-500/30 text-purple-200 border-purple-500/40">
                           <Layers className="h-3 w-3 mr-1" />
                           {categories.length} Categories
                         </Badge>
@@ -320,8 +320,8 @@ export default function EventDetailsPage({ params }: PageProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             {/* Total Revenue */}
             <motion.div whileHover={{ y: -4, transition: { duration: 0.2 } }}>
-              <Card className="relative overflow-hidden bg-gradient-to-br from-purple-surface to-purple-surface/80 border-purple-accent/30 hover:border-purple-accent/60 transition-all duration-300 group">
-                <div className="absolute inset-0 bg-gradient-to-br from-violet-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <Card className="relative overflow-hidden bg-linear-to-br from-purple-surface to-purple-surface/80 border-purple-accent/30 hover:border-purple-accent/60 transition-all duration-300 group">
+                <div className="absolute inset-0 bg-linear-to-br from-violet-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <CardContent className="relative p-6">
                   <div className="flex items-start justify-between">
                     <div className="space-y-3">
@@ -333,7 +333,7 @@ export default function EventDetailsPage({ params }: PageProps) {
                         <span className="text-text-tertiary">this week</span>
                       </div>
                     </div>
-                    <div className="p-3 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 shadow-lg">
+                    <div className="p-3 rounded-xl bg-linear-to-br from-violet-500 to-purple-600 shadow-lg">
                       <DollarSign className="h-6 w-6 text-white" />
                     </div>
                   </div>
@@ -346,8 +346,8 @@ export default function EventDetailsPage({ params }: PageProps) {
 
             {/* Withdrawable Earnings */}
             <motion.div whileHover={{ y: -4, transition: { duration: 0.2 } }}>
-              <Card className="relative overflow-hidden bg-gradient-to-br from-purple-surface to-purple-surface/80 border-purple-accent/30 hover:border-purple-accent/60 transition-all duration-300 group">
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <Card className="relative overflow-hidden bg-linear-to-br from-purple-surface to-purple-surface/80 border-purple-accent/30 hover:border-purple-accent/60 transition-all duration-300 group">
+                <div className="absolute inset-0 bg-linear-to-br from-emerald-500/20 to-teal-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <CardContent className="relative p-6">
                   <div className="flex items-start justify-between">
                     <div className="space-y-3">
@@ -357,12 +357,12 @@ export default function EventDetailsPage({ params }: PageProps) {
                         <span className="text-text-tertiary">Available now</span>
                       </div>
                     </div>
-                    <div className="p-3 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 shadow-lg">
+                    <div className="p-3 rounded-xl bg-linear-to-br from-emerald-500 to-teal-500 shadow-lg">
                       <Wallet className="h-6 w-6 text-white" />
                     </div>
                   </div>
                   <Button
-                    className="mt-4 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white rounded-xl shadow-lg shadow-violet-500/25"
+                    className="mt-4 bg-linear-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white rounded-xl shadow-lg shadow-violet-500/25"
                     size="sm"
                   >
                     Withdraw Funds
@@ -376,7 +376,7 @@ export default function EventDetailsPage({ params }: PageProps) {
 
         {/* Categories Section */}
         <motion.div variants={itemVariants}>
-          <Card className="bg-gradient-to-br from-purple-surface to-purple-surface/90 border-purple-accent/30">
+          <Card className="bg-linear-to-br from-purple-surface to-purple-surface/90 border-purple-accent/30">
             <CardHeader className="flex flex-row items-center justify-between pb-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-purple-500/30">

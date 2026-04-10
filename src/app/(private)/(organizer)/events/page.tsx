@@ -170,7 +170,7 @@ export default function EventsPage() {
       value: stats.total,
       icon: Calendar,
       gradient: 'from-violet-500/20 to-purple-500/20',
-      iconBg: 'bg-gradient-to-br from-violet-500 to-purple-600',
+      iconBg: 'bg-linear-to-br from-violet-500 to-purple-600',
       trend: '+12%',
     },
     {
@@ -178,7 +178,7 @@ export default function EventsPage() {
       value: stats.pending,
       icon: Clock,
       gradient: 'from-amber-500/20 to-orange-500/20',
-      iconBg: 'bg-gradient-to-br from-amber-500 to-orange-500',
+      iconBg: 'bg-linear-to-br from-amber-500 to-orange-500',
       trend: '+2',
     },
     {
@@ -186,7 +186,7 @@ export default function EventsPage() {
       value: stats.approved,
       icon: CheckCircle,
       gradient: 'from-emerald-500/20 to-teal-500/20',
-      iconBg: 'bg-gradient-to-br from-emerald-500 to-teal-500',
+      iconBg: 'bg-linear-to-br from-emerald-500 to-teal-500',
       trend: '+8',
     },
     {
@@ -194,7 +194,7 @@ export default function EventsPage() {
       value: stats.rejected,
       icon: XCircle,
       gradient: 'from-rose-500/20 to-pink-500/20',
-      iconBg: 'bg-gradient-to-br from-rose-500 to-pink-500',
+      iconBg: 'bg-linear-to-br from-rose-500 to-pink-500',
       trend: '-1',
     },
   ]
@@ -230,10 +230,10 @@ export default function EventsPage() {
       >
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-purple-200 to-purple-400 bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold bg-linear-to-r from-white via-purple-200 to-purple-400 bg-clip-text text-transparent">
               My Events
             </h1>
-            <Badge className="bg-gradient-to-r from-violet-500/30 to-purple-500/30 text-purple-200 border-purple-500/40">
+            <Badge className="bg-linear-to-r from-violet-500/30 to-purple-500/30 text-purple-200 border-purple-500/40">
               <Layers className="h-3 w-3 mr-1" />
               {stats.total} Total
             </Badge>
@@ -245,7 +245,7 @@ export default function EventsPage() {
         <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
           <Button
             size="lg"
-            className="bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white shadow-lg shadow-purple-500/25"
+            className="bg-linear-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white shadow-lg shadow-purple-500/25"
             asChild
           >
             <Link href="/events/new">
@@ -264,8 +264,8 @@ export default function EventsPage() {
               key={card.title}
               whileHover={{ y: -4, transition: { duration: 0.2 } }}
             >
-              <Card className="relative overflow-hidden bg-gradient-to-br from-purple-surface to-purple-surface/80 border-purple-accent/30 hover:border-purple-accent/60 transition-all duration-300 group">
-                <div className={`absolute inset-0 bg-gradient-to-br ${card.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+              <Card className="relative overflow-hidden bg-linear-to-br from-purple-surface to-purple-surface/80 border-purple-accent/30 hover:border-purple-accent/60 transition-all duration-300 group">
+                <div className={`absolute inset-0 bg-linear-to-br ${card.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
                 <CardContent className="relative p-6">
                   <div className="flex items-start justify-between">
                     <div className="space-y-3">
@@ -296,7 +296,7 @@ export default function EventsPage() {
 
       {/* Filters */}
       <motion.div variants={itemVariants}>
-        <Card className="bg-gradient-to-br from-violet-900/30 to-purple-900/30 border-violet-500/30 shadow-lg">
+        <Card className="bg-linear-to-br from-violet-900/30 to-purple-900/30 border-violet-500/30 shadow-lg">
           <CardHeader className="flex flex-row items-center justify-between pb-4">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-violet-500/30">
@@ -326,7 +326,7 @@ export default function EventsPage() {
 
       {/* Events Table */}
       <motion.div variants={itemVariants}>
-        <Card className="bg-gradient-to-br from-purple-surface to-purple-surface/90 border-purple-accent/30">
+        <Card className="bg-linear-to-br from-purple-surface to-purple-surface/90 border-purple-accent/30">
           <CardHeader className="flex flex-row items-center justify-between pb-4">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-purple-500/30">

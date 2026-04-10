@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
@@ -30,9 +31,9 @@ import {
   ChevronRight,
   LogOut,
   User,
+  Users,
   Settings,
-  Bell,
-  Shield,
+  Bell
 } from 'lucide-react'
 import { signout } from '@/apis/auth'
 
@@ -83,9 +84,24 @@ const bottomNavItems = [
 
 const adminNavItems = [
   {
-    name: 'Admin Dashboard',
+    name: 'Dashboard',
     href: '/admin',
-    icon: Shield,
+    icon: LayoutDashboard,
+  },
+  {
+    name: 'All Events',
+    href: '/admin/events',
+    icon: Calendar,
+  },
+  {
+    name: 'Organizers',
+    href: '/admin/organizers',
+    icon: Users,
+  },
+  {
+    name: 'Settings',
+    href: '/admin/settings',
+    icon: Settings,
   },
 ]
 
@@ -95,7 +111,7 @@ export function Sidebar({ user }: SidebarProps) {
   const pathname = usePathname()
 
   const NavItem = ({ item }: { item: typeof mainNavItems[0] }) => {
-    const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`)
+    const isActive = pathname === item.href 
     const Icon = item.icon
 
     const content = (
@@ -182,21 +198,43 @@ export function Sidebar({ user }: SidebarProps) {
       {/* Header with Toggle */}
       <div className="flex items-center justify-between p-4 border-b border-purple-accent/30">
         {!collapsed && (
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gold-primary flex items-center justify-center">
-              <span className="text-text-tertiary font-bold text-sm">EV</span>
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-linear-to-br from-violet-500/30 to-purple-500/30 flex items-center justify-center border border-purple-accent/30">
+              <Image
+                src="/logo.png"
+                alt="Tomame"
+                width={24}
+                height={24}
+                className="object-contain"
+              />
             </div>
-            <span className="font-semibold text-text-primary text-lg">EventVote</span>
-          </div>
+            <span className="font-semibold text-text-primary text-lg">Tomame</span>
+          </Link>
         )}
         <Button
           variant="ghost"
           size="icon"
           onClick={() => setCollapsed(!collapsed)}
-          className="text-text-secondary hover:text-text-primary hover:bg-purple-accent/20"
+          className={cn(
+            "text-text-secondary hover:text-text-primary hover:bg-purple-accent/20",
+            collapsed && "mx-auto"
+          )}
         >
           {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </Button>
+        {collapsed && (
+          <Link href="/" className="absolute left-1/2 -translate-x-1/2 top-4">
+            <div className="w-8 h-8 rounded-lg bg-linear-to-br from-violet-500/30 to-purple-500/30 flex items-center justify-center border border-purple-accent/30">
+              <Image
+                src="/logo.png"
+                alt="Tomame"
+                width={24}
+                height={24}
+                className="object-contain"
+              />
+            </div>
+          </Link>
+        )}
       </div>
 
       {/* Main Navigation */}
@@ -274,7 +312,7 @@ export function Sidebar({ user }: SidebarProps) {
               )}
             </Button>
           </PopoverTrigger>
-          <PopoverContent 
+          <PopoverContent
             className="w-56 bg-purple-surface border-purple-accent text-text-primary"
             align={collapsed ? "center" : "start"}
           >

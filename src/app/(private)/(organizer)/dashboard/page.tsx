@@ -118,7 +118,7 @@ export default function DashboardPage() {
       value: stats.totalEvents,
       icon: Calendar,
       gradient: 'from-violet-500/20 to-purple-500/20',
-      iconBg: 'bg-gradient-to-br from-violet-500 to-purple-600',
+      iconBg: 'bg-linear-to-br from-violet-500 to-purple-600',
       trend: '+12%',
       href: '/events',
     },
@@ -127,7 +127,7 @@ export default function DashboardPage() {
       value: stats.totalCategories,
       icon: Layers,
       gradient: 'from-blue-500/20 to-cyan-500/20',
-      iconBg: 'bg-gradient-to-br from-blue-500 to-cyan-500',
+      iconBg: 'bg-linear-to-br from-blue-500 to-cyan-500',
       trend: '+8%',
       href: '/events',
     },
@@ -136,7 +136,7 @@ export default function DashboardPage() {
       value: stats.totalVotes,
       icon: Trophy,
       gradient: 'from-amber-500/20 to-yellow-500/20',
-      iconBg: 'bg-gradient-to-br from-amber-500 to-yellow-500',
+      iconBg: 'bg-linear-to-br from-amber-500 to-yellow-500',
       trend: '+24%',
       href: '/events',
     },
@@ -145,7 +145,7 @@ export default function DashboardPage() {
       value: stats.totalNominees,
       icon: Users,
       gradient: 'from-emerald-500/20 to-teal-500/20',
-      iconBg: 'bg-gradient-to-br from-emerald-500 to-teal-500',
+      iconBg: 'bg-linear-to-br from-emerald-500 to-teal-500',
       trend: '+15%',
       href: '/events',
     },
@@ -242,10 +242,10 @@ export default function DashboardPage() {
       >
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-purple-200 to-purple-400 bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold bg-linear-to-r from-white via-purple-200 to-purple-400 bg-clip-text text-transparent">
               Dashboard
             </h1>
-            <Badge className="bg-gradient-to-r from-violet-500/30 to-purple-500/30 text-purple-200 border-purple-500/40">
+            <Badge className="bg-linear-to-r from-violet-500/30 to-purple-500/30 text-purple-200 border-purple-500/40">
               <Sparkles className="h-3 w-3 mr-1" />
               Organizer
             </Badge>
@@ -257,7 +257,7 @@ export default function DashboardPage() {
         <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
           <Button
             size="lg"
-            className="bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white shadow-lg shadow-purple-500/25"
+            className="bg-linear-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white shadow-lg shadow-purple-500/25"
             asChild
           >
             <Link href="/events/new">
@@ -278,8 +278,8 @@ export default function DashboardPage() {
               whileHover={{ y: -4, transition: { duration: 0.2 } }}
             >
               <Link href={card.href}>
-                <Card className="relative overflow-hidden bg-gradient-to-br from-purple-surface to-purple-surface/80 border-purple-accent/30 hover:border-purple-accent/60 transition-all duration-300 group cursor-pointer">
-                  <div className={`absolute inset-0 bg-gradient-to-br ${card.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+                <Card className="relative overflow-hidden bg-linear-to-br from-purple-surface to-purple-surface/80 border-purple-accent/30 hover:border-purple-accent/60 transition-all duration-300 group cursor-pointer">
+                  <div className={`absolute inset-0 bg-linear-to-br ${card.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
                   <CardContent className="relative p-6">
                     <div className="flex items-start justify-between">
                       <div className="space-y-3">
@@ -311,7 +311,7 @@ export default function DashboardPage() {
 
       {/* Event Status Distribution */}
       <motion.div variants={itemVariants}>
-        <Card className="bg-gradient-to-br from-purple-surface to-purple-surface/90 border-purple-accent/30">
+        <Card className="bg-linear-to-br from-purple-surface to-purple-surface/90 border-purple-accent/30">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
@@ -335,7 +335,7 @@ export default function DashboardPage() {
                     whileHover={{ scale: 1.02, y: -2 }}
                     className="relative overflow-hidden"
                   >
-                    <div className={`p-6 rounded-2xl border-2 ${card.borderColor} bg-gradient-to-br ${card.bgColor} shadow-lg`}>
+                    <div className={`p-6 rounded-2xl border-2 ${card.borderColor} bg-linear-to-br ${card.bgColor} shadow-lg`}>
                       {/* Decorative background pattern */}
                       <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
                       
@@ -385,7 +385,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Recent Events */}
         <motion.div variants={itemVariants} className="xl:col-span-2">
-          <Card className="h-full bg-gradient-to-br from-purple-surface to-purple-surface/90 border-purple-accent/30">
+          <Card className="h-full bg-linear-to-br from-purple-surface to-purple-surface/90 border-purple-accent/30">
             <CardHeader className="flex flex-row items-center justify-between pb-4">
               <div>
                 <CardTitle className="text-text-primary flex items-center gap-2">
@@ -417,7 +417,7 @@ export default function DashboardPage() {
                   animate={{ opacity: 1, scale: 1 }}
                   className="text-center py-12 px-4"
                 >
-                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-violet-500/20 to-purple-500/20 flex items-center justify-center mx-auto mb-4">
+                  <div className="w-20 h-20 rounded-full bg-linear-to-br from-violet-500/20 to-purple-500/20 flex items-center justify-center mx-auto mb-4">
                     <Calendar className="h-10 w-10 text-purple-400" />
                   </div>
                   <h3 className="text-xl font-semibold text-text-primary mb-2">
@@ -428,7 +428,7 @@ export default function DashboardPage() {
                   </p>
                   <Button
                     size="lg"
-                    className="bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white"
+                    className="bg-linear-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white"
                     asChild
                   >
                     <Link href="/events/new">
@@ -451,7 +451,7 @@ export default function DashboardPage() {
                           <div className="relative">
                             <Avatar className="h-14 w-14 border-2 border-purple-accent/30 shadow-lg">
                               <AvatarImage src={event.eventImageUrl || undefined} />
-                              <AvatarFallback className="bg-gradient-to-br from-violet-500 to-purple-600 text-white font-semibold">
+                              <AvatarFallback className="bg-linear-to-br from-violet-500 to-purple-600 text-white font-semibold">
                                 {event.eventName.slice(0, 2).toUpperCase()}
                               </AvatarFallback>
                             </Avatar>
@@ -503,7 +503,7 @@ export default function DashboardPage() {
         {/* Quick Actions & Tips */}
         <motion.div variants={itemVariants} className="space-y-6">
           {/* Quick Actions */}
-          <Card className="bg-gradient-to-br from-violet-900/50 to-purple-900/50 border-violet-500/40 shadow-xl shadow-violet-900/20">
+          <Card className="bg-linear-to-br from-violet-900/50 to-purple-900/50 border-violet-500/40 shadow-xl shadow-violet-900/20">
             <CardHeader className="pb-3">
               <CardTitle className="text-white flex items-center gap-2">
                 <Star className="h-5 w-5 text-amber-400" />
@@ -513,7 +513,7 @@ export default function DashboardPage() {
             <CardContent className="space-y-3">
               <motion.div whileHover={{ x: 4, scale: 1.01 }} whileTap={{ scale: 0.98 }}>
                 <Link href="/events/new">
-                  <div className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 transition-all duration-300 shadow-lg group cursor-pointer">
+                  <div className="flex items-center gap-4 p-4 rounded-xl bg-linear-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 transition-all duration-300 shadow-lg group cursor-pointer">
                     <div className="p-2.5 rounded-lg bg-white/20">
                       <Plus className="h-5 w-5 text-white" />
                     </div>
@@ -559,7 +559,7 @@ export default function DashboardPage() {
           </Card>
 
           {/* Pro Tip */}
-          <Card className="bg-gradient-to-br from-amber-500/10 via-purple-surface to-purple-surface border-amber-500/20">
+          <Card className="bg-linear-to-br from-amber-500/10 via-purple-surface to-purple-surface border-amber-500/20">
             <CardContent className="p-5">
               <div className="flex items-start gap-3">
                 <div className="p-2 rounded-lg bg-amber-500/20 shrink-0">
@@ -580,8 +580,8 @@ export default function DashboardPage() {
       {/* Getting Started Guide - Only shows when no events */}
       {recentEvents.length === 0 && !isLoading && (
         <motion.div variants={itemVariants}>
-          <Card className="bg-gradient-to-br from-purple-surface to-purple-surface/90 border-purple-accent/30 overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-violet-500/10 to-purple-500/10 rounded-full blur-3xl" />
+          <Card className="bg-linear-to-br from-purple-surface to-purple-surface/90 border-purple-accent/30 overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-linear-to-br from-violet-500/10 to-purple-500/10 rounded-full blur-3xl" />
             <CardHeader className="relative">
               <CardTitle className="text-text-primary flex items-center gap-2 text-2xl">
                 <Sparkles className="h-6 w-6 text-amber-400" />
@@ -624,12 +624,12 @@ export default function DashboardPage() {
                     className="relative group"
                   >
                     <div className="p-6 rounded-2xl bg-purple-bg/50 border border-purple-accent/20 hover:border-purple-accent/40 transition-all duration-300 hover:bg-purple-bg">
-                      <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${item.color} flex items-center justify-center mb-4 shadow-lg`}>
+                      <div className={`w-14 h-14 rounded-xl bg-linear-to-br ${item.color} flex items-center justify-center mb-4 shadow-lg`}>
                         <item.icon className="h-7 w-7 text-white" />
                       </div>
                       <div className="flex items-center gap-2 mb-2">
                         <span className="text-xs font-bold text-purple-400">{item.step}</span>
-                        <div className="h-px flex-1 bg-gradient-to-r from-purple-accent/50 to-transparent" />
+                        <div className="h-px flex-1 bg-linear-to-r from-purple-accent/50 to-transparent" />
                       </div>
                       <h4 className="font-semibold text-text-primary text-lg mb-2">
                         {item.title}

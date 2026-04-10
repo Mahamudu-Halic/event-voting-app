@@ -3,13 +3,15 @@
 import { useState, useCallback, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { EventTable } from '@/components/events/event-table'
+import { AdminEventTable } from '@/components/events/admin-event-table'
 import { EventFilters } from '@/components/events/event-filters'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
 import {
   getAllEvents,
   getPendingEventsCount,
+  approveEvent,
+  rejectEvent,
 } from '@/apis/events'
 import {
   type EventListItem,
@@ -94,6 +96,30 @@ export default function AdminEventsPage() {
   const handleSortChange = useCallback((newSort: EventSort) => {
     setSort(newSort)
   }, [])
+
+  const handleApprove = useCallback(async (eventId: string, eventName: string) => {
+    try {
+      await approveEvent(eventId)
+      toast.success(`Event "${eventName}" has been approved`)
+      fetchEvents()
+      fetchPendingCount()
+    } catch (error) {
+      console.error('Error approving event:', error)
+      toast.error('Failed to approve event')
+    }
+  }, [fetchEvents, fetchPendingCount])
+
+  const handleReject = useCallback(async (eventId: string, eventName: string, reason?: string) => {
+    try {
+      await rejectEvent(eventId, reason)
+      toast.success(`Event "${eventName}" has been rejected`)
+      fetchEvents()
+      fetchPendingCount()
+    } catch (error) {
+      console.error('Error rejecting event:', error)
+      toast.error('Failed to reject event')
+    }
+  }, [fetchEvents, fetchPendingCount])
 
   const statsCards = [
     {
@@ -204,12 +230,13 @@ export default function AdminEventsPage() {
         <h2 className="text-xl font-semibold text-text-primary mb-4">
           Event List
         </h2>
-        <EventTable
+        <AdminEventTable
           events={events}
           sort={sort}
           onSort={handleSortChange}
           onPageChange={handlePageChange}
-          isAdmin
+          onApprove={handleApprove}
+          onReject={handleReject}
           isLoading={isLoading}
         />
       </div>
