@@ -178,7 +178,6 @@ export default function VotingPage() {
       initial="hidden"
       animate="visible"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <motion.div
           variants={itemVariants}
@@ -592,7 +591,6 @@ export default function VotingPage() {
             ))
           )}
         </motion.div>
-      </div>
     </motion.div>
   );
 }
