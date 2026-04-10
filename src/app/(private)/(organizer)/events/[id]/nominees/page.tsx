@@ -193,7 +193,7 @@ export default function NomineesPage() {
 
   return (
     <motion.div
-      className="space-y-8 min-h-screen bg-linear-to-br from-violet-950 via-purple-950 to-purple-900 -m-6 p-6 max-w-7xl mx-auto"
+      className="space-y-8 min-h-screen bg-linear-to-br from-violet-950 via-purple-950 to-purple-900 my-6 p-6 max-w-7xl mx-auto"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
