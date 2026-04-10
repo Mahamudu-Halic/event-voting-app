@@ -193,12 +193,11 @@ export default function NomineesPage() {
 
   return (
     <motion.div
-      className="space-y-8 min-h-screen bg-linear-to-br from-violet-950 via-purple-950 to-purple-900 -m-6 p-6"
+      className="space-y-8 min-h-screen bg-linear-to-br from-violet-950 via-purple-950 to-purple-900 -m-6 p-6 max-w-7xl mx-auto"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <motion.div
           variants={itemVariants}
@@ -484,7 +483,6 @@ export default function NomineesPage() {
           categories={categories}
           editingNominee={editingNominee}
         />
-      </div>
       {/* Delete Dialog */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent className="bg-linear-to-br from-violet-950 to-purple-900 border-violet-500/30 rounded-2xl">
