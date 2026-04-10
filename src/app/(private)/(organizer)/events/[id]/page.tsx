@@ -229,7 +229,7 @@ export default function EventDetailsPage({ params }: PageProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header Section */}
         <motion.div variants={itemVariants}>
-          <Card className="bg-linear-to-br from-violet-900/50 to-purple-900/50 border-violet-500/30 mb-8 overflow-hidden">
+          <Card className="bg-purple-surface border-violet-500/30 mb-8 overflow-hidden">
             <CardContent className="p-6">
               <div className="flex flex-col md:flex-row gap-6">
                 {/* Event Image */}

@@ -29,13 +29,9 @@ import {
   Clock,
   CheckCircle,
   XCircle,
-  Loader2,
-  Sparkles,
-  Filter,
-  TrendingUp,
-  ChevronRight,
-  Layers,
-  Zap,
+  Loader2, Filter,
+  TrendingUp, Layers,
+  Zap
 } from 'lucide-react'
 
 export default function EventsPage() {
@@ -296,7 +292,7 @@ export default function EventsPage() {
 
       {/* Filters */}
       <motion.div variants={itemVariants}>
-        <Card className="bg-linear-to-br from-violet-900/30 to-purple-900/30 border-violet-500/30 shadow-lg">
+        <Card className="bg-purple-surface border-violet-500/30 shadow-lg">
           <CardHeader className="flex flex-row items-center justify-between pb-4">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-violet-500/30">
@@ -341,10 +337,10 @@ export default function EventsPage() {
                 </CardDescription>
               </div>
             </div>
-            <Button variant="ghost" size="sm" className="group">
+            {/* <Button variant="ghost" size="sm" className="group">
               <span className="text-purple-400 group-hover:text-purple-300">View Analytics</span>
               <ChevronRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-            </Button>
+            </Button> */}
           </CardHeader>
           <CardContent>
             <EventTable
