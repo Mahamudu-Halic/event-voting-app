@@ -503,7 +503,7 @@ export default function DashboardPage() {
         {/* Quick Actions & Tips */}
         <motion.div variants={itemVariants} className="space-y-6">
           {/* Quick Actions */}
-          <Card className="bg-linear-to-br from-violet-900/50 to-purple-900/50 border-violet-500/40 shadow-xl shadow-violet-900/20">
+          <Card className="bg-purple-surface border-violet-500/40 shadow-xl shadow-violet-900/20">
             <CardHeader className="pb-3">
               <CardTitle className="text-white flex items-center gap-2">
                 <Star className="h-5 w-5 text-amber-400" />

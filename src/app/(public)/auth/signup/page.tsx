@@ -1,8 +1,17 @@
+import type { Metadata } from "next";
 import SignUp from "@/components/forms/signup";
-import React from "react";
 
-const page = () => {
-  return <SignUp />;
+export const metadata: Metadata = {
+  title: "Create Account",
+  description:
+    "Create your free Tomame account to start hosting events, managing nominations, and engaging your audience with voting.",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
-export default page;
+export default function SignUpPage() {
+  return <SignUp />;
+}
+
