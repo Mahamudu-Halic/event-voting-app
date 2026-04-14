@@ -12,5 +12,5 @@ export const metadata: Metadata = {
 };
 
 export default function LoginPage() {
-  return <Login redirectUrl={"/dashboard"} />;
+  return <Login redirectUrl={"/organizer/dashboard"} />;
 }

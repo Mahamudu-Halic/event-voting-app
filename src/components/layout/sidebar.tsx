@@ -49,17 +49,17 @@ interface SidebarProps {
 const mainNavItems = [
   {
     name: 'Dashboard',
-    href: '/dashboard',
+    href: '/organizer/dashboard',
     icon: LayoutDashboard,
   },
   {
     name: 'Events',
-    href: '/events',
+    href: '/organizer/events',
     icon: Calendar,
   },
   {
     name: 'Withdrawals',
-    href: '/withdrawals',
+    href: '/organizer/withdrawals',
     icon: Wallet,
   },
 ]
@@ -67,17 +67,17 @@ const mainNavItems = [
 const bottomNavItems = [
   {
     name: 'Guide',
-    href: '/support/guide',
+    href: '/organizer/support/guide',
     icon: BookOpen,
   },
   {
     name: 'FAQs',
-    href: '/support/faqs',
+    href: '/organizer/support/faqs',
     icon: HelpCircle,
   },
   {
     name: 'Contact',
-    href: '/support/contact',
+    href: '/organizer/support/contact',
     icon: Mail,
   },
 ]

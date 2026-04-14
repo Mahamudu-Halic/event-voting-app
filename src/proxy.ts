@@ -40,15 +40,15 @@ export async function proxy(req: NextRequest) {
 
   const isAuthPage = req.nextUrl.pathname.startsWith("/auth");
 
-  if (req.nextUrl.pathname === "/") {
-    return NextResponse.redirect(new URL("/dashboard", req.url));
+  if (req.nextUrl.pathname === "/organizer") {
+    return NextResponse.redirect(new URL("/organizer/dashboard", req.url));
   }
 
   if (
     profile?.role !== "admin" &&
     req.nextUrl.pathname.startsWith("/admin")
   ) {
-    return NextResponse.redirect(new URL("/dashboard", req.url));
+    return NextResponse.redirect(new URL("/organizer/dashboard", req.url));
   }
 
   if ((error || !claims) && !isAuthPage) {
@@ -60,7 +60,7 @@ export async function proxy(req: NextRequest) {
 
   if (claims && isAuthPage) {
     // Redirect to dashboard if already logged in and trying to access auth pages
-    return NextResponse.redirect(new URL("/dashboard", req.url));
+    return NextResponse.redirect(new URL("/organizer/dashboard", req.url));
   }
 
   return res;

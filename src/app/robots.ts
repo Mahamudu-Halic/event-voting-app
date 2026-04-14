@@ -10,8 +10,7 @@ export default function robots(): MetadataRoute.Robots {
         allow: ["/"],
         disallow: [
           "/admin/",
-          "/dashboard/",
-          "/events/",
+          "/organizer/",
           "/api/",
           "/_next/",
           "/private/",
@@ -21,7 +20,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "Googlebot",
         allow: ["/"],
-        disallow: ["/admin/", "/dashboard/", "/events/", "/private/"],
+        disallow: ["/admin/", "/organizer/", "/private/"],
       },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,
