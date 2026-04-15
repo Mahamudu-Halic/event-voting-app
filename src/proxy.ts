@@ -2,6 +2,8 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+const PUBLIC_ROUTES = ["/events", "/about", "/contact", "/blog"];
+
 export async function proxy(req: NextRequest) {
   let res = NextResponse.next();
 
@@ -39,19 +41,23 @@ export async function proxy(req: NextRequest) {
     .single();
 
   const isAuthPage = req.nextUrl.pathname.startsWith("/auth");
+  const isPublicPage = PUBLIC_ROUTES.some((route) =>
+    req.nextUrl.pathname.startsWith(route),
+  );
+
+  if (req.nextUrl.pathname === "/") {
+    return res;
+  }
 
   if (req.nextUrl.pathname === "/organizer") {
     return NextResponse.redirect(new URL("/organizer/dashboard", req.url));
   }
 
-  if (
-    profile?.role !== "admin" &&
-    req.nextUrl.pathname.startsWith("/admin")
-  ) {
+  if (profile?.role !== "admin" && req.nextUrl.pathname.startsWith("/admin")) {
     return NextResponse.redirect(new URL("/organizer/dashboard", req.url));
   }
 
-  if ((error || !claims) && !isAuthPage) {
+  if ((error || !claims) && !isAuthPage && !isPublicPage) {
     // Redirect to login if trying to access protected route
     const redirectUrl = new URL("/auth/login", req.url);
     redirectUrl.searchParams.set("redirectedFrom", req.nextUrl.pathname);
