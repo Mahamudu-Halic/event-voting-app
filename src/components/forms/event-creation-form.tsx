@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm, FormProvider } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -8,16 +8,15 @@ import { eventFormSchema, EventFormData, steps } from '@/lib/validations/event'
 import { createEvent } from '@/apis/events'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 import { Step1BasicInfo } from './event-steps/step1-basic-info'
 import { Step2EventTools } from './event-steps/step2-event-tools'
 import { Step3Pricing } from './event-steps/step3-pricing'
 import { Step4Review } from './event-steps/step4-review'
-import { 
-  ChevronLeft, 
-  ChevronRight, 
-  Check, 
+import {
+  ChevronLeft,
+  ChevronRight,
+  Check,
   Loader2,
   Save
 } from 'lucide-react'
@@ -139,7 +138,7 @@ export function EventCreationForm() {
       })
       
       // Redirect to events page
-      router.replace('/events')
+      router.push('/organizer/events')
       router.refresh()
     } catch (error) {
       console.error('Error creating event:', error)

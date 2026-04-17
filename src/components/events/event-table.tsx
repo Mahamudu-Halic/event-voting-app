@@ -216,7 +216,7 @@ export function EventTable({
           </p>
           {!isAdmin && (
             <Button className="mt-6 bg-gold-primary hover:bg-gold-dark text-text-tertiary" asChild>
-              <Link href="/events/new">Create Event</Link>
+              <Link href="/organizer/events/new">Create Event</Link>
             </Button>
           )}
         </CardContent>
@@ -319,7 +319,7 @@ export function EventTable({
                               className="justify-start text-text-secondary hover:text-gold-primary hover:bg-gold-primary/10"
                               asChild
                             >
-                              <Link href={`/events/${event.id}`}>
+                              <Link href={`/organizer/events/${event.id}`}>
                                 <Eye className="h-4 w-4 mr-2" />
                                 View Details
                               </Link>

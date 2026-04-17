@@ -12,7 +12,7 @@ interface EventsLayoutProps {
 
 export default function EventsLayout({ children }: EventsLayoutProps) {
   const pathname = usePathname();
-  const eventBasePath = pathname.split('/').slice(0, 3).join('/');
+  const eventBasePath = pathname.split('/').slice(0, 4).join('/');
 
   const navItems = [
     { href: eventBasePath, label: "Event Details", icon: Calendar },

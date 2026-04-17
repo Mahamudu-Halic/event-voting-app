@@ -244,7 +244,7 @@ export default function EventsPage() {
             className="bg-linear-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white shadow-lg shadow-purple-500/25"
             asChild
           >
-            <Link href="/events/new">
+            <Link href="/organizer/events/new">
               <Plus className="h-5 w-5 mr-2" />
               Create Event
             </Link>

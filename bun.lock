@@ -14,6 +14,7 @@
         "@supabase/ssr": "^0.10.0",
         "@supabase/supabase-js": "^2.101.1",
         "@tanstack/react-query": "^5.96.1",
+        "@types/paystack": "^2.0.5",
         "@types/qrcode": "^1.5.6",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
@@ -507,6 +508,8 @@
     "@types/json5": ["@types/json5@0.0.29", "", {}, "sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ=="],
 
     "@types/node": ["@types/node@20.19.37", "", { "dependencies": { "undici-types": "~6.21.0" } }, "sha512-8kzdPJ3FsNsVIurqBs7oodNnCEVbni9yUEkaHbgptDACOPW04jimGagZ51E6+lXUwJjgnBw+hyko/lkFWCldqw=="],
+
+    "@types/paystack": ["@types/paystack@2.0.5", "", {}, "sha512-O9KowopGqxCAhH0vOIezm+N84UzcFbAUWPzC0mzE0qeR5vvBmcTM4OwdXCBgb0BYlJ4JP2bNMSggWUeSVXzQGQ=="],
 
     "@types/qrcode": ["@types/qrcode@1.5.6", "", { "dependencies": { "@types/node": "*" } }, "sha512-te7NQcV2BOvdj2b1hCAHzAoMNuj65kNBMz0KBaxM6c3VGBOhU0dURQKOtH8CFNI/dsKkwlv32p26qYQTWoB5bw=="],
 

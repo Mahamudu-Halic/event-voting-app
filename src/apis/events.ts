@@ -679,3 +679,367 @@ export async function getEventById(eventId: string): Promise<Event> {
 
   return data as Event
 }
+
+// Get all approved events for public viewing (no auth required)
+export async function getPublicEvents(
+  searchQuery?: string
+): Promise<EventListItem[]> {
+  const supabase = await createClient()
+
+  let query = supabase
+    .from("events")
+    .select("id, event_name, event_description, event_image_url, approval_status, amount_per_vote, service_fee, created_at, enable_voting, enable_nominations, voting_start_date, voting_end_date")
+    .eq("approval_status", "approved")
+    .eq("is_active", true)
+    .order("created_at", { ascending: false })
+
+  // Apply search filter if provided
+  if (searchQuery && searchQuery.trim()) {
+    query = query.ilike("event_name", `%${searchQuery.trim()}%`)
+  }
+
+  const { data, error } = await query
+
+  if (error) {
+    console.error("Error fetching public events:", error)
+    throw new Error("Failed to fetch events")
+  }
+
+  return (data || []).map((event) => ({
+    id: event.id,
+    eventName: event.event_name,
+    eventImageUrl: event.event_image_url,
+    approvalStatus: event.approval_status,
+    amountPerVote: event.amount_per_vote,
+    serviceFee: event.service_fee,
+    createdAt: event.created_at,
+    enableVoting: event.enable_voting,
+    enableNominations: event.enable_nominations,
+    eventDescription: event.event_description,
+    votingStartDate: event.voting_start_date,
+    votingEndDate: event.voting_end_date,
+  }))
+}
+
+// Get public event details (for event detail page)
+export async function getPublicEventDetails(eventId: string): Promise<EventListItem | null> {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from("events")
+    .select("id, event_name, event_description, event_image_url, approval_status, amount_per_vote, service_fee, created_at, enable_voting, enable_nominations, nomination_start_date, nomination_end_date, voting_start_date, voting_end_date")
+    .eq("id", eventId)
+    .eq("approval_status", "approved")
+    .eq("is_active", true)
+    .single()
+
+  if (error) {
+    if (error.code === "PGRST116") {
+      return null // Event not found or not approved
+    }
+    console.error("Error fetching event details:", error)
+    throw new Error("Failed to fetch event details")
+  }
+
+  return {
+    id: data.id,
+    eventName: data.event_name,
+    eventImageUrl: data.event_image_url,
+    approvalStatus: data.approval_status,
+    amountPerVote: data.amount_per_vote,
+    serviceFee: data.service_fee,
+    createdAt: data.created_at,
+    enableVoting: data.enable_voting,
+    enableNominations: data.enable_nominations,
+    eventDescription: data.event_description,
+    nominationStartDate: data.nomination_start_date,
+    nominationEndDate: data.nomination_end_date,
+    votingStartDate: data.voting_start_date,
+    votingEndDate: data.voting_end_date,
+  }
+}
+
+// Get public categories for an event
+export async function getPublicEventCategories(
+  eventId: string,
+  searchQuery?: string
+): Promise<Array<{ id: string; categoryName: string; categoryDescription: string | null; nomineesCount: number }>> {
+  const supabase = await createClient()
+
+  let query = supabase
+    .from("categories")
+    .select(`
+      id,
+      category_name,
+      category_description,
+      nominees:nominees(count)
+    `)
+    .eq("event_id", eventId)
+    .eq("is_active", true)
+    .order("created_at", { ascending: true })
+
+  // Apply search filter if provided
+  if (searchQuery && searchQuery.trim()) {
+    query = query.ilike("category_name", `%${searchQuery.trim()}%`)
+  }
+
+  const { data, error } = await query
+
+  if (error) {
+    console.error("Error fetching event categories:", error)
+    throw new Error("Failed to fetch categories")
+  }
+
+  return (data || []).map((cat) => ({
+    id: cat.id,
+    categoryName: cat.category_name,
+    categoryDescription: cat.category_description,
+    nomineesCount: (cat.nominees as unknown as [{ count: number }])?.[0]?.count || 0,
+  }))
+}
+
+// Get public nominees for a category
+export interface PublicNominee {
+  id: string
+  nomineeName: string
+  nomineeDescription: string | null
+  nomineeImageUrl: string | null
+  uniqueCode: string
+  votesCount: number
+}
+
+export async function getPublicNomineesByCategory(
+  categoryId: string,
+  searchQuery?: string
+): Promise<PublicNominee[]> {
+  const supabase = await createClient()
+
+  let query = supabase
+    .from("nominees")
+    .select("id, nominee_name, nominee_description, nominee_image_url, unique_code, votes_count")
+    .eq("category_id", categoryId)
+    .eq("is_active", true)
+    .order("votes_count", { ascending: false })
+
+  // Apply search filter if provided
+  if (searchQuery && searchQuery.trim()) {
+    query = query.ilike("nominee_name", `%${searchQuery.trim()}%`)
+  }
+
+  const { data, error } = await query
+
+  if (error) {
+    console.error("Error fetching nominees:", error)
+    throw new Error("Failed to fetch nominees")
+  }
+
+  return (data || []).map((nominee) => ({
+    id: nominee.id,
+    nomineeName: nominee.nominee_name,
+    nomineeDescription: nominee.nominee_description,
+    nomineeImageUrl: nominee.nominee_image_url,
+    uniqueCode: nominee.unique_code,
+    votesCount: nominee.votes_count,
+  }))
+}
+
+// Get public voting status (no auth required)
+export interface PublicVotingStatus {
+  is_voting_active: boolean
+  voting_start_date: string | null
+  voting_end_date: string | null
+  has_voting_period: boolean
+  approval_status: string
+}
+
+export async function getPublicVotingStatus(
+  eventId: string
+): Promise<PublicVotingStatus> {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from("events")
+    .select("voting_start_date, voting_end_date, approval_status")
+    .eq("id", eventId)
+    .eq("approval_status", "approved")
+    .eq("is_active", true)
+    .single()
+
+  if (error) {
+    console.error("Error fetching voting status:", error)
+    throw new Error("Failed to fetch voting status")
+  }
+
+  const now = new Date()
+  const has_voting_period = !!(data.voting_start_date && data.voting_end_date)
+
+  let is_voting_active = false
+  if (has_voting_period) {
+    const startDate = new Date(data.voting_start_date)
+    const endDate = new Date(data.voting_end_date)
+    is_voting_active = now >= startDate && now <= endDate
+  }
+
+  return {
+    is_voting_active,
+    voting_start_date: data.voting_start_date,
+    voting_end_date: data.voting_end_date,
+    has_voting_period,
+    approval_status: data.approval_status,
+  }
+}
+
+// Cast a vote for a nominee
+export interface CastVoteData {
+  nomineeId: string
+  votesCount: number
+}
+
+export interface CastVoteResult {
+  success: boolean
+  totalAmount: number
+  message: string
+}
+
+export async function castPublicVote(
+  eventId: string,
+  data: CastVoteData
+): Promise<CastVoteResult> {
+  const supabase = await createClient()
+
+  // Get event details for pricing
+  const { data: event, error: eventError } = await supabase
+    .from("events")
+    .select("amount_per_vote, service_fee, voting_start_date, voting_end_date")
+    .eq("id", eventId)
+    .eq("approval_status", "approved")
+    .eq("is_active", true)
+    .single()
+
+  if (eventError || !event) {
+    throw new Error("Event not found or not available for voting")
+  }
+
+  // Check if voting is open
+  const now = new Date()
+  if (event.voting_start_date && new Date(event.voting_start_date) > now) {
+    throw new Error("Voting has not started yet")
+  }
+  if (event.voting_end_date && new Date(event.voting_end_date) < now) {
+    throw new Error("Voting has ended")
+  }
+
+  // Get nominee details
+  const { data: nominee, error: nomineeError } = await supabase
+    .from("nominees")
+    .select("id, votes_count, category_id, categories!inner(event_id)")
+    .eq("id", data.nomineeId)
+    .eq("is_active", true)
+    .single()
+
+  if (nomineeError || !nominee) {
+    throw new Error("Nominee not found")
+  }
+
+  // Verify nominee belongs to the event
+  const nomineeEventId = (nominee.categories as unknown as { event_id: string })?.event_id
+  if (nomineeEventId !== eventId) {
+    throw new Error("Invalid nominee for this event")
+  }
+
+  // Calculate total amount
+  const baseAmount = event.amount_per_vote * data.votesCount
+  const serviceFee = baseAmount * (event.service_fee / 100)
+  const totalAmount = baseAmount + serviceFee
+
+  // Update nominee vote count
+  const { error: updateError } = await supabase
+    .from("nominees")
+    .update({
+      votes_count: (nominee.votes_count || 0) + data.votesCount,
+      updated_at: now.toISOString(),
+    })
+    .eq("id", data.nomineeId)
+
+  if (updateError) {
+    console.error("Error casting vote:", updateError)
+    throw new Error("Failed to cast vote")
+  }
+
+  return {
+    success: true,
+    totalAmount,
+    message: `Successfully cast ${data.votesCount} vote${data.votesCount !== 1 ? "s" : ""}`,
+  }
+}
+
+// Get event and category details for public viewing
+export async function getPublicEventAndCategory(
+  eventId: string,
+  categoryId: string
+): Promise<{ event: EventListItem | null; category: { id: string; categoryName: string; categoryDescription: string | null } | null }> {
+  const supabase = await createClient()
+
+  // Get event details
+  const { data: event, error: eventError } = await supabase
+    .from("events")
+    .select("id, event_name, event_description, event_image_url, approval_status, amount_per_vote, service_fee, created_at, enable_voting, enable_nominations")
+    .eq("id", eventId)
+    .eq("approval_status", "approved")
+    .eq("is_active", true)
+    .single()
+
+  if (eventError) {
+    if (eventError.code === "PGRST116") {
+      return { event: null, category: null }
+    }
+    throw new Error("Failed to fetch event")
+  }
+
+  // Get category details
+  const { data: category, error: categoryError } = await supabase
+    .from("categories")
+    .select("id, category_name, category_description")
+    .eq("id", categoryId)
+    .eq("event_id", eventId)
+    .eq("is_active", true)
+    .single()
+
+  if (categoryError || !category) {
+    return {
+      event: {
+        id: event.id,
+        eventName: event.event_name,
+        eventImageUrl: event.event_image_url,
+        approvalStatus: event.approval_status,
+        amountPerVote: event.amount_per_vote,
+        serviceFee: event.service_fee,
+        createdAt: event.created_at,
+        enableVoting: event.enable_voting,
+        enableNominations: event.enable_nominations,
+        eventDescription: event.event_description,
+      },
+      category: null,
+    }
+  }
+
+  return {
+    event: {
+      id: event.id,
+      eventName: event.event_name,
+      eventImageUrl: event.event_image_url,
+      approvalStatus: event.approval_status,
+      amountPerVote: event.amount_per_vote,
+      serviceFee: event.service_fee,
+      createdAt: event.created_at,
+      enableVoting: event.enable_voting,
+      enableNominations: event.enable_nominations,
+      eventDescription: event.event_description,
+    },
+    category: {
+      id: category.id,
+      categoryName: category.category_name,
+      categoryDescription: category.category_description,
+    },
+  }
+}
