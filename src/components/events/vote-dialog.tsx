@@ -12,7 +12,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { castPublicVote, type PublicNominee } from "@/apis/events";
+import { castPublicVote, type PublicNominee, type CastVoteResult } from "@/apis/events";
+import { initializePaystackPayment, generatePaymentReference } from "@/apis/paystack";
 import { Ticket, Minus, Plus, Loader2, TrendingUp, User, CheckCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -22,6 +23,7 @@ interface VoteDialogProps {
   amountPerVote: number;
   serviceFee: number;
   isLive: boolean;
+  currency?: "GHS" | "NGN";
 }
 
 export function VoteDialog({
@@ -30,10 +32,14 @@ export function VoteDialog({
   amountPerVote,
   serviceFee,
   isLive,
+  currency = "NGN", // Default to NGN for broader compatibility
 }: VoteDialogProps) {
   const [voteCount, setVoteCount] = useState(1);
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [voterEmail, setVoterEmail] = useState("");
+  const [voterName, setVoterName] = useState("");
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
   const [result, setResult] = useState<{
     success: boolean;
     message: string;
@@ -43,10 +49,20 @@ export function VoteDialog({
 
   const baseAmount = amountPerVote * voteCount;
   const feeAmount = baseAmount * (serviceFee / 100);
-  const totalAmount = baseAmount + feeAmount;
+  const totalAmount = baseAmount; // Only charge base amount, no service fee to voter
+
+  // Currency symbol based on selected currency
+  const currencySymbol = currency === "GHS" ? "₵" : "₦";
 
   const handleVoteCountChange = (value: number) => {
     setVoteCount(Math.max(1, Math.min(1000, value)));
+  };
+
+  const handleProceedToPayment = () => {
+    if (!voterEmail || !voterEmail.includes("@")) {
+      return;
+    }
+    setShowPaymentForm(true);
   };
 
   const handleSubmit = async () => {
@@ -54,24 +70,33 @@ export function VoteDialog({
     setResult(null);
 
     try {
-      const response = await castPublicVote(eventId, {
-        nomineeId: nominee.id,
-        votesCount: voteCount,
+      // Generate unique payment reference
+      const reference = generatePaymentReference();
+
+      // Initialize Paystack payment
+      const callbackUrl = `${window.location.origin}/events/${eventId}/verify-payment`;
+
+      initializePaystackPayment({
+        email: voterEmail,
+        amount: Math.round(totalAmount * 100), // Convert to kobo/pesewas
+        reference,
+        callback_url: callbackUrl,
+        currency,
+        metadata: {
+          event_id: eventId,
+          nominee_id: nominee.id,
+          votes_count: voteCount,
+          voter_email: voterEmail,
+          voter_name: voterName || undefined,
+        },
       });
 
-      setResult({
-        success: response.success,
-        message: response.message,
-        totalAmount: response.totalAmount,
-      });
-
-      router.refresh()
+      // Payment popup will open, and on success it will redirect to callbackUrl
     } catch (error) {
       setResult({
         success: false,
-        message: error instanceof Error ? error.message : "Failed to cast vote",
+        message: error instanceof Error ? error.message : "Failed to initialize payment",
       });
-    } finally {
       setIsSubmitting(false);
     }
   };
@@ -82,6 +107,9 @@ export function VoteDialog({
     setTimeout(() => {
       setVoteCount(1);
       setResult(null);
+      setVoterEmail("");
+      setVoterName("");
+      setShowPaymentForm(false);
     }, 200);
   };
 
@@ -176,44 +204,94 @@ export function VoteDialog({
               </div>
             </div>
 
-            {/* Pricing Breakdown */}
-            <div className="bg-purple-surface rounded-lg p-4 space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-text-secondary">
-                  {voteCount} vote{voteCount !== 1 ? "s" : ""} @ ${amountPerVote.toFixed(2)}
-                </span>
-                <span className="text-text-primary">${baseAmount.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-text-secondary">Service fee ({serviceFee}%)</span>
-                <span className="text-text-primary">${feeAmount.toFixed(2)}</span>
-              </div>
-              <div className="border-t border-purple-accent/20 pt-2 mt-2">
-                <div className="flex justify-between font-semibold">
-                  <span className="text-text-primary">Total Amount</span>
-                  <span className="text-gold-primary">${totalAmount.toFixed(2)}</span>
+            {/* Voter Info Form */}
+            {!showPaymentForm ? (
+              <div className="space-y-4 py-4 border-t border-purple-accent/20">
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-text-primary">
+                    Email Address <span className="text-error">*</span>
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="your@email.com"
+                    value={voterEmail}
+                    onChange={(e) => setVoterEmail(e.target.value)}
+                    className="bg-purple-surface border-purple-accent/30 text-text-primary focus-visible:ring-gold-primary"
+                    required
+                  />
+                  <p className="text-xs text-text-secondary">
+                    Required for payment receipt
+                  </p>
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="name" className="text-text-primary">
+                    Your Name (Optional)
+                  </Label>
+                  <Input
+                    id="name"
+                    type="text"
+                    placeholder="John Doe"
+                    value={voterName}
+                    onChange={(e) => setVoterName(e.target.value)}
+                    className="bg-purple-surface border-purple-accent/30 text-text-primary focus-visible:ring-gold-primary"
+                  />
+                </div>
+                <Button
+                  onClick={handleProceedToPayment}
+                  disabled={!voterEmail || !voterEmail.includes("@")}
+                  className="w-full bg-gold-primary text-text-tertiary hover:bg-gold-dark"
+                >
+                  Proceed to Payment
+                </Button>
               </div>
-            </div>
+            ) : (
+              <>
+                {/* Pricing Breakdown */}
+                <div className="bg-purple-surface rounded-lg p-4 space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-text-secondary">
+                      {voteCount} vote{voteCount !== 1 ? "s" : ""} @ {currencySymbol}{amountPerVote.toFixed(2)}
+                    </span>
+                    <span className="text-text-primary">{currencySymbol}{baseAmount.toFixed(2)}</span>
+                  </div>
+                  <div className="border-t border-purple-accent/20 pt-2 mt-2">
+                    <div className="flex justify-between font-semibold">
+                      <span className="text-text-primary">Total Amount</span>
+                      <span className="text-gold-primary">{currencySymbol}{totalAmount.toFixed(2)}</span>
+                    </div>
+                  </div>
+                </div>
 
-            {/* Submit Button */}
-            <Button
-              onClick={handleSubmit}
-              disabled={isSubmitting}
-              className="w-full bg-gold-primary text-text-tertiary hover:bg-gold-dark"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Processing...
-                </>
-              ) : (
-                <>
-                  <Ticket className="mr-2 h-4 w-4" />
-                  Cast {voteCount} Vote{voteCount !== 1 ? "s" : ""}
-                </>
-              )}
-            </Button>
+                {/* Payment Button */}
+                <div className="space-y-2">
+                  <Button
+                    onClick={handleSubmit}
+                    disabled={isSubmitting}
+                    className="w-full bg-gold-primary text-text-tertiary hover:bg-gold-dark"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Processing...
+                      </>
+                    ) : (
+                      <>
+                        <Ticket className="mr-2 h-4 w-4" />
+                        Pay & Cast {voteCount} Vote{voteCount !== 1 ? "s" : ""}
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowPaymentForm(false)}
+                    className="w-full border-purple-accent text-text-primary hover:bg-purple-surface"
+                  >
+                    Back
+                  </Button>
+                </div>
+              </>
+            )}
           </>
         ) : (
           /* Result Screen */
@@ -226,7 +304,7 @@ export function VoteDialog({
                 <DialogTitle className="text-text-primary mb-2">Vote Cast Successfully!</DialogTitle>
                 <p className="text-text-secondary mb-4">{result.message}</p>
                 <p className="text-lg font-semibold text-gold-primary mb-6">
-                  Total Paid: ${result.totalAmount?.toFixed(2)}
+                  Total Paid: {currencySymbol}{result.totalAmount?.toFixed(2)}
                 </p>
               </>
             ) : (

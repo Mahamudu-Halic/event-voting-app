@@ -21,7 +21,6 @@ import {
   ArrowRight,
   Trophy,
   Clock,
-  DollarSign,
   Info,
   ChevronLeft,
 } from "lucide-react";
@@ -119,11 +118,6 @@ export default async function EventPage({ params, searchParams }: Props) {
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-text-primary mb-4">
               {event.eventName}
             </h1>
-
-            <p className="text-lg text-text-secondary mb-6 line-clamp-3">
-              {event.eventDescription || "No description available"}
-            </p>
-
             {/* Quick Stats */}
             <div className="flex flex-wrap gap-6 mb-6">
               <div className="flex items-center gap-2 text-text-secondary">
@@ -135,8 +129,8 @@ export default async function EventPage({ params, searchParams }: Props) {
                 <span>{totalNominees} Nominees</span>
               </div>
               <div className="flex items-center gap-2 text-text-secondary">
-                <DollarSign className="h-5 w-5 text-gold-primary" />
-                <span>${event.amountPerVote.toFixed(2)} per vote</span>
+                <span className="text-gold-primary font-bold text-lg">₵</span>
+                <span>₵{event.amountPerVote.toFixed(2)} per vote</span>
               </div>
             </div>
 
@@ -247,7 +241,7 @@ export default async function EventPage({ params, searchParams }: Props) {
                       <div className="flex justify-between">
                         <span className="text-text-secondary">Amount per vote</span>
                         <span className="text-text-primary font-medium">
-                          ${event.amountPerVote.toFixed(2)}
+                          ₵{event.amountPerVote.toFixed(2)}
                         </span>
                       </div>
                       <div className="flex justify-between">

@@ -29,7 +29,6 @@ import {
   Target,
   Activity,
   ChevronRight,
-  DollarSign,
   Star
 } from 'lucide-react'
 
@@ -260,7 +259,7 @@ export default function DashboardPage() {
             className="bg-linear-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white shadow-lg shadow-purple-500/25"
             asChild
           >
-            <Link href="/events/new">
+            <Link href="/organizer/events/new">
               <Plus className="h-5 w-5 mr-2" />
               Create Event
             </Link>
@@ -431,7 +430,7 @@ export default function DashboardPage() {
                     className="bg-linear-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white"
                     asChild
                   >
-                    <Link href="/events/new">
+                    <Link href="/organizer/events/new">
                       <Plus className="h-5 w-5 mr-2" />
                       Create Your First Event
                     </Link>
@@ -475,8 +474,8 @@ export default function DashboardPage() {
                               </span>
                               <span className="w-1 h-1 rounded-full bg-text-tertiary" />
                               <span className="flex items-center gap-1">
-                                <DollarSign className="h-3.5 w-3.5" />
-                                ${event.amountPerVote}/vote
+                                <span className="font-bold text-xs">₵</span>
+                                ₵{event.amountPerVote}/vote
                               </span>
                               {event.enableVoting && (
                                 <>
@@ -512,7 +511,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent className="space-y-3">
               <motion.div whileHover={{ x: 4, scale: 1.01 }} whileTap={{ scale: 0.98 }}>
-                <Link href="/events/new">
+                <Link href="/organizer/events/new">
                   <div className="flex items-center gap-4 p-4 rounded-xl bg-linear-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 transition-all duration-300 shadow-lg group cursor-pointer">
                     <div className="p-2.5 rounded-lg bg-white/20">
                       <Plus className="h-5 w-5 text-white" />

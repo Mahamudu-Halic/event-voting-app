@@ -21,7 +21,7 @@ export const eventFormSchema = z.object({
   enableVoting: z.boolean(),
 
   // Step 3: Pricing
-  amountPerVote: z.number().min(0.1, 'Minimum amount is $0.10').max(1000, 'Maximum amount is $1000'),
+  amountPerVote: z.number().min(0.1, 'Minimum amount is ₵0.10').max(1000, 'Maximum amount is ₵1000'),
   serviceFee: z.enum(['10', '12']),
 })
 

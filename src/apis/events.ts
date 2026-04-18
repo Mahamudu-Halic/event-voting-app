@@ -721,8 +721,19 @@ export async function getPublicEvents(
   }))
 }
 
+// Helper to validate UUID format
+function isValidUUID(str: string): boolean {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+  return uuidRegex.test(str)
+}
+
 // Get public event details (for event detail page)
 export async function getPublicEventDetails(eventId: string): Promise<EventListItem | null> {
+  // Validate UUID format before querying
+  if (!isValidUUID(eventId)) {
+    return null
+  }
+
   const supabase = await createClient()
 
   const { data, error } = await supabase
@@ -764,6 +775,11 @@ export async function getPublicEventCategories(
   eventId: string,
   searchQuery?: string
 ): Promise<Array<{ id: string; categoryName: string; categoryDescription: string | null; nomineesCount: number }>> {
+  // Validate UUID format before querying
+  if (!isValidUUID(eventId)) {
+    return []
+  }
+
   const supabase = await createClient()
 
   let query = supabase
@@ -855,6 +871,17 @@ export interface PublicVotingStatus {
 export async function getPublicVotingStatus(
   eventId: string
 ): Promise<PublicVotingStatus> {
+  // Validate UUID format before querying
+  if (!isValidUUID(eventId)) {
+    return {
+      is_voting_active: false,
+      voting_start_date: null,
+      voting_end_date: null,
+      has_voting_period: false,
+      approval_status: 'pending',
+    }
+  }
+
   const supabase = await createClient()
 
   const { data, error } = await supabase
@@ -901,6 +928,14 @@ export interface CastVoteResult {
   message: string
 }
 
+export interface PaymentVerificationData {
+  reference: string
+  amount: number // in pesewas (already multiplied by 100)
+  eventId: string
+  nomineeId: string
+  votesCount: number
+}
+
 export async function castPublicVote(
   eventId: string,
   data: CastVoteData
@@ -910,7 +945,7 @@ export async function castPublicVote(
   // Get event details for pricing
   const { data: event, error: eventError } = await supabase
     .from("events")
-    .select("amount_per_vote, service_fee, voting_start_date, voting_end_date")
+    .select("amount_per_vote, service_fee, voting_start_date, voting_end_date, total_revenue")
     .eq("id", eventId)
     .eq("approval_status", "approved")
     .eq("is_active", true)
@@ -947,10 +982,8 @@ export async function castPublicVote(
     throw new Error("Invalid nominee for this event")
   }
 
-  // Calculate total amount
-  const baseAmount = event.amount_per_vote * data.votesCount
-  const serviceFee = baseAmount * (event.service_fee / 100)
-  const totalAmount = baseAmount + serviceFee
+  // Calculate total amount (no service fee charged to voter)
+  const totalAmount = event.amount_per_vote * data.votesCount
 
   // Update nominee vote count
   const { error: updateError } = await supabase
@@ -970,6 +1003,94 @@ export async function castPublicVote(
     success: true,
     totalAmount,
     message: `Successfully cast ${data.votesCount} vote${data.votesCount !== 1 ? "s" : ""}`,
+  }
+}
+
+export async function verifyAndProcessVote(
+  paymentData: PaymentVerificationData
+): Promise<CastVoteResult> {
+  const supabase = await createClient()
+
+  // Get event details
+  const { data: event, error: eventError } = await supabase
+    .from("events")
+    .select("amount_per_vote, service_fee, voting_start_date, voting_end_date, total_revenue")
+    .eq("id", paymentData.eventId)
+    .eq("approval_status", "approved")
+    .eq("is_active", true)
+    .single()
+
+  if (eventError || !event) {
+    throw new Error("Event not found or not available for voting")
+  }
+
+  // Check if voting is open
+  const now = new Date()
+  if (event.voting_start_date && new Date(event.voting_start_date) > now) {
+    throw new Error("Voting has not started yet")
+  }
+  if (event.voting_end_date && new Date(event.voting_end_date) < now) {
+    throw new Error("Voting has ended")
+  }
+
+  // Verify the payment amount matches expected amount
+  const expectedAmount = event.amount_per_vote * paymentData.votesCount
+  const paidAmount = paymentData.amount / 100 // Convert from pesewas to GHS
+
+  if (Math.abs(paidAmount - expectedAmount) > 0.01) {
+    throw new Error("Payment amount does not match expected amount")
+  }
+
+  // Get nominee details
+  const { data: nominee, error: nomineeError } = await supabase
+    .from("nominees")
+    .select("id, votes_count, category_id, categories!inner(event_id)")
+    .eq("id", paymentData.nomineeId)
+    .eq("is_active", true)
+    .single()
+
+  if (nomineeError || !nominee) {
+    throw new Error("Nominee not found")
+  }
+
+  // Verify nominee belongs to the event
+  const nomineeEventId = (nominee.categories as unknown as { event_id: string })?.event_id
+  if (nomineeEventId !== paymentData.eventId) {
+    throw new Error("Invalid nominee for this event")
+  }
+
+  // Update nominee vote count
+  const { error: updateNomineeError } = await supabase
+    .from("nominees")
+    .update({
+      votes_count: (nominee.votes_count || 0) + paymentData.votesCount,
+      updated_at: now.toISOString(),
+    })
+    .eq("id", paymentData.nomineeId)
+
+  if (updateNomineeError) {
+    console.error("Error casting vote:", updateNomineeError)
+    throw new Error("Failed to cast vote")
+  }
+
+  // Update event total_revenue
+  const { error: updateRevenueError } = await supabase
+    .from("events")
+    .update({
+      total_revenue: (event.total_revenue || 0) + paidAmount,
+      updated_at: now.toISOString(),
+    })
+    .eq("id", paymentData.eventId)
+
+  if (updateRevenueError) {
+    console.error("Error updating revenue:", updateRevenueError)
+    // Don't throw here - vote was already cast successfully
+  }
+
+  return {
+    success: true,
+    totalAmount: paidAmount,
+    message: `Successfully cast ${paymentData.votesCount} vote${paymentData.votesCount !== 1 ? "s" : ""}`,
   }
 }
 

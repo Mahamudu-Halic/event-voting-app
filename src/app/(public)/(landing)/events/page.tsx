@@ -115,7 +115,7 @@ export default async function EventsPage({ searchParams }: EventsPageProps) {
                       <div className="text-sm">
                         <span className="text-text-secondary">Per vote: </span>
                         <span className="text-gold-primary font-medium">
-                          ${event.amountPerVote.toFixed(2)}
+                          ₵{event.amountPerVote.toFixed(2)}
                         </span>
                       </div>
                       <ArrowRight className="h-4 w-4 text-text-secondary group-hover:text-gold-primary group-hover:translate-x-1 transition-all" />

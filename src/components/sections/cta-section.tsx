@@ -72,8 +72,8 @@ export function CTASection() {
               className="bg-gold-primary text-text-tertiary hover:bg-gold-dark font-semibold px-10 h-14 text-lg group"
               asChild
             >
-              <Link href="/register">
-                Get Started Free
+              <Link href="/auth/signup">
+                Get Started
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Link>
             </Button>

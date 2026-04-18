@@ -76,7 +76,7 @@ export function Navbar({ className }: NavbarProps) {
               className="bg-gold-primary text-text-tertiary hover:bg-gold-dark font-medium"
               asChild
             >
-              <Link href="/auth/register">Get Started</Link>
+              <Link href="/auth/signup">Get Started</Link>
             </Button>
           </div>
 
@@ -153,7 +153,7 @@ export function Navbar({ className }: NavbarProps) {
                     className="w-full bg-gold-primary text-text-tertiary hover:bg-gold-dark font-medium"
                     asChild
                   >
-                    <Link href="/auth/register" onClick={() => setIsOpen(false)}>
+                    <Link href="/auth/signup" onClick={() => setIsOpen(false)}>
                       Get Started
                     </Link>
                   </Button>

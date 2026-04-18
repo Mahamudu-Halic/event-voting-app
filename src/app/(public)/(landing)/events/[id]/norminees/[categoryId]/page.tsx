@@ -10,7 +10,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Trophy, ChevronLeft, Ticket, DollarSign, TrendingUp, User } from "lucide-react";
+import { Search, Trophy, ChevronLeft, Ticket, TrendingUp, User } from "lucide-react";
 
 import { VoteDialog } from "@/components/events/vote-dialog";
 
@@ -84,8 +84,8 @@ export default async function NomineesPage({ params, searchParams }: Props) {
                 </span>
               )}
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-accent/20 text-purple-accent text-sm font-medium">
-                <DollarSign className="h-4 w-4" />
-                ${event.amountPerVote.toFixed(2)} per vote
+                <span className="font-bold">₵</span>
+                ₵{event.amountPerVote.toFixed(2)} per vote
               </span>
             </div>
             <h1 className="text-3xl sm:text-4xl font-bold text-text-primary mb-2">
@@ -167,10 +167,7 @@ export default async function NomineesPage({ params, searchParams }: Props) {
                     {nominee.nomineeName}
                   </h3>
 
-                  {/* Description */}
-                  <p className="text-sm text-text-secondary line-clamp-2 mb-4">
-                    {nominee.nomineeDescription || "No description available"}
-                  </p>
+                 
 
                   {/* Unique Code */}
                   <div className="text-xs text-text-secondary mb-4">
@@ -184,6 +181,7 @@ export default async function NomineesPage({ params, searchParams }: Props) {
                     amountPerVote={event.amountPerVote}
                     serviceFee={event.serviceFee}
                     isLive={isLive}
+                    currency={(process.env.NEXT_PUBLIC_PAYSTACK_CURRENCY as "GHS" | "NGN") || "NGN"}
                   />
                 </CardContent>
               </Card>
