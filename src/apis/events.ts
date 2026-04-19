@@ -1,6 +1,7 @@
 "use server"
 
 import { createClient } from "@/lib/supabase/server"
+import { createAdminClient } from "@/lib/supabase/admin"
 import { 
   type Event, 
   type EventWithCreator, 
@@ -926,6 +927,8 @@ export interface CastVoteResult {
   success: boolean
   totalAmount: number
   message: string
+  netAmount?: number
+  serviceFee?: number
 }
 
 export interface PaymentVerificationData {
@@ -1087,9 +1090,69 @@ export async function verifyAndProcessVote(
     // Don't throw here - vote was already cast successfully
   }
 
+  // Credit organizer account with amount minus service fee
+  const serviceFeeAmount = paidAmount * (event.service_fee / 100);
+  const netAmount = paidAmount - serviceFeeAmount;
+
+  try {
+    // Use admin client to bypass RLS for account updates
+    const adminClient = await createAdminClient();
+
+    // Get event organizer
+    const { data: eventData, error: eventDataError } = await supabase
+      .from("events")
+      .select("created_by")
+      .eq("id", paymentData.eventId)
+      .single();
+
+    if (!eventDataError && eventData?.created_by) {
+      // Update or create organizer account using admin client
+      const { data: account } = await adminClient
+        .from("accounts")
+        .select("id, balance, total_earned")
+        .eq("user_id", eventData.created_by)
+        .single();
+
+      if (account) {
+        // Update existing account
+        const { error: updateError } = await adminClient
+          .from("accounts")
+          .update({
+            balance: (account.balance || 0) + netAmount,
+            total_earned: (account.total_earned || 0) + netAmount,
+            updated_at: now.toISOString(),
+          })
+          .eq("id", account.id);
+
+        if (updateError) {
+          console.error("Error updating account:", updateError);
+        }
+      } else {
+        // Create new account for organizer
+        const { error: insertError } = await adminClient
+          .from("accounts")
+          .insert({
+            user_id: eventData.created_by,
+            balance: netAmount,
+            total_earned: netAmount,
+            total_withdrawn: 0,
+          });
+
+        if (insertError) {
+          console.error("Error creating account:", insertError);
+        }
+      }
+    }
+  } catch (accountError) {
+    console.error("Error crediting organizer account:", accountError);
+    // Don't throw - vote was already cast successfully
+  }
+
   return {
     success: true,
     totalAmount: paidAmount,
+    netAmount: netAmount,
+    serviceFee: serviceFeeAmount,
     message: `Successfully cast ${paymentData.votesCount} vote${paymentData.votesCount !== 1 ? "s" : ""}`,
   }
 }

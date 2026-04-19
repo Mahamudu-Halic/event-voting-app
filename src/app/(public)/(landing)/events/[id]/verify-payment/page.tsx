@@ -9,15 +9,22 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, CheckCircle, XCircle, AlertCircle } from "lucide-react";
 import Link from "next/link";
 
-const CURRENCY_SYMBOL = (process.env.NEXT_PUBLIC_PAYSTACK_CURRENCY as "GHS" | "NGN") === "GHS" ? "₵" : "₦";
+const CURRENCY_SYMBOL =
+  (process.env.NEXT_PUBLIC_PAYSTACK_CURRENCY as "GHS" | "NGN") === "GHS"
+    ? "₵"
+    : "₦";
 
 function VerifyPaymentContent() {
   const searchParams = useSearchParams();
   const params = useParams();
   const router = useRouter();
-  const [status, setStatus] = useState<"verifying" | "success" | "error">("verifying");
+  const [status, setStatus] = useState<"verifying" | "success" | "error">(
+    "verifying",
+  );
   const [message, setMessage] = useState("Verifying your payment...");
   const [totalAmount, setTotalAmount] = useState<number | null>(null);
+  const [netAmount, setNetAmount] = useState<number | null>(null);
+  const [serviceFee, setServiceFee] = useState<number | null>(null);
 
   const reference = searchParams.get("reference");
   const eventId = params.id as string;
@@ -57,6 +64,8 @@ function VerifyPaymentContent() {
           setStatus("success");
           setMessage(result.message);
           setTotalAmount(result.totalAmount);
+          setNetAmount(result.netAmount ?? null);
+          setServiceFee(result.serviceFee ?? null);
         } else {
           setStatus("error");
           setMessage(result.message || "Failed to process vote.");
@@ -67,7 +76,7 @@ function VerifyPaymentContent() {
         setMessage(
           error instanceof Error
             ? error.message
-            : "An error occurred while processing your payment."
+            : "An error occurred while processing your payment.",
         );
       }
     };
@@ -101,9 +110,18 @@ function VerifyPaymentContent() {
               <div className="space-y-2">
                 <p className="text-text-primary font-medium">{message}</p>
                 {totalAmount && (
-                  <p className="text-gold-primary text-lg font-semibold">
-                    Amount Paid: {CURRENCY_SYMBOL}{totalAmount.toFixed(2)}
-                  </p>
+                  <div className="bg-purple-surface rounded-lg p-3 mt-2">
+                    <div className="text-sm text-text-secondary mb-2">
+                      Payment Details
+                    </div>
+                    <div className="flex justify-between font-semibold text-success border-t border-purple-accent/20 pt-1 mt-1">
+                      <span>Total Paid</span>
+                      <span className="font-medium">
+                        {CURRENCY_SYMBOL}
+                        {totalAmount.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
                 )}
                 <p className="text-text-secondary text-sm">
                   Reference: {reference}

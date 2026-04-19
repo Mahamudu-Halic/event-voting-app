@@ -34,10 +34,11 @@ export function VoteDialog({
   isLive,
   currency = "NGN", // Default to NGN for broader compatibility
 }: VoteDialogProps) {
+  const DEFAULT_VOTER_EMAIL = "tomame247@gmail.com";
+
   const [voteCount, setVoteCount] = useState(1);
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [voterEmail, setVoterEmail] = useState("");
   const [voterName, setVoterName] = useState("");
   const [showPaymentForm, setShowPaymentForm] = useState(false);
   const [result, setResult] = useState<{
@@ -59,9 +60,6 @@ export function VoteDialog({
   };
 
   const handleProceedToPayment = () => {
-    if (!voterEmail || !voterEmail.includes("@")) {
-      return;
-    }
     setShowPaymentForm(true);
   };
 
@@ -76,20 +74,26 @@ export function VoteDialog({
       // Initialize Paystack payment
       const callbackUrl = `${window.location.origin}/events/${eventId}/verify-payment`;
 
-      initializePaystackPayment({
-        email: voterEmail,
-        amount: Math.round(totalAmount * 100), // Convert to kobo/pesewas
-        reference,
-        callback_url: callbackUrl,
-        currency,
-        metadata: {
-          event_id: eventId,
-          nominee_id: nominee.id,
-          votes_count: voteCount,
-          voter_email: voterEmail,
-          voter_name: voterName || undefined,
-        },
-      });
+      // Close dialog before opening Paystack
+      setIsOpen(false);
+
+      // Small delay to ensure dialog closes smoothly before Paystack opens
+      setTimeout(() => {
+        initializePaystackPayment({
+          email: DEFAULT_VOTER_EMAIL,
+          amount: Math.round(totalAmount * 100), // Convert to kobo/pesewas
+          reference,
+          callback_url: callbackUrl,
+          currency,
+          metadata: {
+            event_id: eventId,
+            nominee_id: nominee.id,
+            votes_count: voteCount,
+            voter_email: DEFAULT_VOTER_EMAIL,
+            voter_name: voterName || undefined,
+          },
+        });
+      }, 300);
 
       // Payment popup will open, and on success it will redirect to callbackUrl
     } catch (error) {
@@ -107,7 +111,6 @@ export function VoteDialog({
     setTimeout(() => {
       setVoteCount(1);
       setResult(null);
-      setVoterEmail("");
       setVoterName("");
       setShowPaymentForm(false);
     }, 200);
@@ -208,23 +211,6 @@ export function VoteDialog({
             {!showPaymentForm ? (
               <div className="space-y-4 py-4 border-t border-purple-accent/20">
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-text-primary">
-                    Email Address <span className="text-error">*</span>
-                  </Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="your@email.com"
-                    value={voterEmail}
-                    onChange={(e) => setVoterEmail(e.target.value)}
-                    className="bg-purple-surface border-purple-accent/30 text-text-primary focus-visible:ring-gold-primary"
-                    required
-                  />
-                  <p className="text-xs text-text-secondary">
-                    Required for payment receipt
-                  </p>
-                </div>
-                <div className="space-y-2">
                   <Label htmlFor="name" className="text-text-primary">
                     Your Name (Optional)
                   </Label>
@@ -239,7 +225,6 @@ export function VoteDialog({
                 </div>
                 <Button
                   onClick={handleProceedToPayment}
-                  disabled={!voterEmail || !voterEmail.includes("@")}
                   className="w-full bg-gold-primary text-text-tertiary hover:bg-gold-dark"
                 >
                   Proceed to Payment
