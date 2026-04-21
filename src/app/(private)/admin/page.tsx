@@ -60,13 +60,22 @@ export default function AdminDashboardPage() {
       iconColor: 'text-gold-primary',
     },
     {
+      title: 'Withdrawal Management',
+      description: 'Review and process withdrawal requests from organizers',
+      icon: DollarSign,
+      href: '/admin/withdrawals',
+      count: 'Manage',
+      color: 'from-emerald-500/20 to-teal-500/20',
+      iconColor: 'text-emerald-400',
+    },
+    {
       title: 'System Settings',
       description: 'Configure platform settings and service fees',
       icon: Settings,
       href: '/admin/settings',
       count: 'Configure',
-      color: 'from-emerald-500/20 to-teal-500/20',
-      iconColor: 'text-emerald-400',
+      color: 'from-rose-500/20 to-pink-500/20',
+      iconColor: 'text-rose-400',
     },
     {
       title: 'Security & Access',
@@ -74,8 +83,8 @@ export default function AdminDashboardPage() {
       icon: Shield,
       href: '/admin/security',
       count: 'Manage',
-      color: 'from-rose-500/20 to-pink-500/20',
-      iconColor: 'text-rose-400',
+      color: 'from-indigo-500/20 to-blue-500/20',
+      iconColor: 'text-indigo-400',
     },
   ]
 

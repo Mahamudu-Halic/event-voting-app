@@ -138,8 +138,7 @@ export function EventCreationForm() {
       })
       
       // Redirect to events page
-      router.push('/organizer/events')
-      router.refresh()
+      window.location.href = '/organizer/events'
     } catch (error) {
       console.error('Error creating event:', error)
       toast.error('Failed to create event', {

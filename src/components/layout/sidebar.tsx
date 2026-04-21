@@ -99,9 +99,9 @@ const adminNavItems = [
     icon: Users,
   },
   {
-    name: "Settings",
-    href: "/admin/settings",
-    icon: Settings,
+    name: "Withdrawals",
+    href: "/admin/withdrawals",
+    icon: Wallet,
   },
 ];
 

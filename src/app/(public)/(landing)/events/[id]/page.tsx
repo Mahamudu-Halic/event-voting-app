@@ -327,10 +327,6 @@ export default async function EventPage({ params, searchParams }: Props) {
                         {category.categoryName}
                       </h3>
 
-                      <p className="text-sm text-text-secondary line-clamp-2 mb-4">
-                        {category.categoryDescription || "No description available"}
-                      </p>
-
                       <div className="flex items-center justify-between pt-3 border-t border-purple-accent/20">
                         <span className="text-sm text-text-secondary">
                           View Nominees

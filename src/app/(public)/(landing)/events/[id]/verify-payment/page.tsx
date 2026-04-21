@@ -6,7 +6,7 @@ import { verifyPaystackPayment } from "@/apis/paystack";
 import { verifyAndProcessVote } from "@/apis/events";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, CheckCircle, XCircle, AlertCircle } from "lucide-react";
+import { Loader2, CheckCircle, XCircle } from "lucide-react";
 import Link from "next/link";
 
 const CURRENCY_SYMBOL =
@@ -23,18 +23,13 @@ function VerifyPaymentContent() {
   );
   const [message, setMessage] = useState("Verifying your payment...");
   const [totalAmount, setTotalAmount] = useState<number | null>(null);
-  const [netAmount, setNetAmount] = useState<number | null>(null);
-  const [serviceFee, setServiceFee] = useState<number | null>(null);
 
   const reference = searchParams.get("reference");
   const eventId = params.id as string;
 
   useEffect(() => {
-    if (!reference) {
-      setStatus("error");
-      setMessage("No payment reference found.");
-      return;
-    }
+    // Only process payment if reference exists
+    if (!reference) return;
 
     const processPayment = async () => {
       try {
@@ -64,8 +59,9 @@ function VerifyPaymentContent() {
           setStatus("success");
           setMessage(result.message);
           setTotalAmount(result.totalAmount);
-          setNetAmount(result.netAmount ?? null);
-          setServiceFee(result.serviceFee ?? null);
+          setTimeout(() => {
+            router.replace(`/events/${eventId}`);
+          }, 3000);
         } else {
           setStatus("error");
           setMessage(result.message || "Failed to process vote.");
@@ -82,7 +78,38 @@ function VerifyPaymentContent() {
     };
 
     processPayment();
-  }, [reference, eventId]);
+  }, [reference, eventId, router]);
+
+  // Handle missing reference case
+  if (!reference) {
+    return (
+      <div className="min-h-screen bg-purple-bg flex items-center justify-center p-4">
+        <Card className="w-full max-w-md bg-purple-surface border-purple-accent/30">
+          <CardHeader className="text-center">
+            <CardTitle className="text-text-primary text-2xl">Payment Failed</CardTitle>
+          </CardHeader>
+          <CardContent className="text-center space-y-6">
+            <div className="flex flex-col items-center gap-4">
+              <div className="w-16 h-16 rounded-full bg-error/20 flex items-center justify-center">
+                <XCircle className="h-10 w-10 text-error" />
+              </div>
+              <div className="space-y-2">
+                <p className="text-text-primary font-medium">No payment reference found.</p>
+              </div>
+              <div className="flex gap-3 pt-4">
+                <Button
+                  onClick={() => router.refresh()}
+                  className="bg-gold-primary text-text-tertiary hover:bg-gold-dark"
+                >
+                  Try Again
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-purple-bg flex items-center justify-center p-4">
@@ -127,14 +154,7 @@ function VerifyPaymentContent() {
                   Reference: {reference}
                 </p>
               </div>
-              <div className="flex gap-3 pt-4">
-                <Button
-                  asChild
-                  className="bg-gold-primary text-text-tertiary hover:bg-gold-dark"
-                >
-                  <Link href={`/events/${eventId}`}>Back to Event</Link>
-                </Button>
-              </div>
+              
             </div>
           )}
 
@@ -152,13 +172,7 @@ function VerifyPaymentContent() {
                 )}
               </div>
               <div className="flex gap-3 pt-4">
-                <Button
-                  asChild
-                  variant="outline"
-                  className="border-purple-accent text-text-primary hover:bg-purple-surface"
-                >
-                  <Link href={`/events/${eventId}`}>Back to Event</Link>
-                </Button>
+                
                 <Button
                   onClick={() => router.refresh()}
                   className="bg-gold-primary text-text-tertiary hover:bg-gold-dark"
