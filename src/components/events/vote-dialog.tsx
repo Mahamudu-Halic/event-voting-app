@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { castPublicVote, type PublicNominee, type CastVoteResult } from "@/apis/events";
+import { type PublicNominee } from "@/apis/events";
 import { initializePaystackPayment, generatePaymentReference } from "@/apis/paystack";
 import { Ticket, Minus, Plus, Loader2, TrendingUp, User, CheckCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -46,10 +46,10 @@ export function VoteDialog({
     message: string;
     totalAmount?: number;
   } | null>(null);
-  const router = useRouter()
+  // const router = useRouter()
 
   const baseAmount = amountPerVote * voteCount;
-  const feeAmount = baseAmount * (serviceFee / 100);
+  // const feeAmount = baseAmount * (serviceFee / 100);
   const totalAmount = baseAmount; // Only charge base amount, no service fee to voter
 
   // Currency symbol based on selected currency
