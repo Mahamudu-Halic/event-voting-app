@@ -11,14 +11,15 @@ export async function POST(req: NextRequest) {
 
   // ---------------- NEW SESSION ----------------
   if (newSession) {
-    const message =
-      "Welcome to Tomame\n" +
-      "1. Vote for a nominee";
+    const message = "Welcome to Tomame\n" + "1. Vote for a nominee";
 
     sessionStore.set(sessionID, { level: 1 });
 
     return NextResponse.json({
       message,
+      userID,
+      sessionID,
+      msisdn,
       continueSession: true,
     });
   }
@@ -27,6 +28,9 @@ export async function POST(req: NextRequest) {
 
   if (!session) {
     return NextResponse.json({
+      userID,
+      sessionID,
+      msisdn,
       message: "Session expired. Try again.",
       continueSession: false,
     });
@@ -54,7 +58,9 @@ export async function POST(req: NextRequest) {
     const supabase = await createClient();
     const { data: nominee, error: nomineeError } = await supabase
       .from("nominees")
-      .select("id, nominee_name, category_id, categories!inner(event_id, events!inner(amount_per_vote, service_fee, created_by, voting_start_date, voting_end_date, approval_status, is_active))")
+      .select(
+        "id, nominee_name, category_id, categories!inner(event_id, events!inner(amount_per_vote, service_fee, created_by, voting_start_date, voting_end_date, approval_status, is_active))",
+      )
       .eq("unique_code", userData)
       .eq("is_active", true)
       .single();
@@ -66,34 +72,84 @@ export async function POST(req: NextRequest) {
         session.level = 1;
       }
       sessionStore.set(sessionID, session);
-      return NextResponse.json({ message, continueSession: true });
+      return NextResponse.json({
+        userID,
+        sessionID,
+        msisdn,
+        message,
+        continueSession: true,
+      });
     }
 
     // Check if event is approved and active
-    const eventData = (nominee.categories as unknown as { event_id: string; events: { amount_per_vote: number; service_fee: number; created_by: string; voting_start_date: string | null; voting_end_date: string | null; approval_status: string; is_active: boolean } })?.events;
-    
-    if (!eventData || eventData.approval_status !== "approved" || !eventData.is_active) {
-      message = "This nominee is not available for voting.\n0. Back to main menu";
+    const eventData = (
+      nominee.categories as unknown as {
+        event_id: string;
+        events: {
+          amount_per_vote: number;
+          service_fee: number;
+          created_by: string;
+          voting_start_date: string | null;
+          voting_end_date: string | null;
+          approval_status: string;
+          is_active: boolean;
+        };
+      }
+    )?.events;
+
+    if (
+      !eventData ||
+      eventData.approval_status !== "approved" ||
+      !eventData.is_active
+    ) {
+      message =
+        "This nominee is not available for voting.\n0. Back to main menu";
       sessionStore.set(sessionID, session);
-      return NextResponse.json({ message, continueSession: true });
+      return NextResponse.json({
+        userID,
+        sessionID,
+        msisdn,
+        message,
+        continueSession: true,
+      });
     }
 
     // Check if voting is open
     const now = new Date();
-    if (eventData.voting_start_date && new Date(eventData.voting_start_date) > now) {
+    if (
+      eventData.voting_start_date &&
+      new Date(eventData.voting_start_date) > now
+    ) {
       message = "Voting has not started yet.\n0. Back to main menu";
       sessionStore.set(sessionID, session);
-      return NextResponse.json({ message, continueSession: true });
+      return NextResponse.json({
+        userID,
+        sessionID,
+        msisdn,
+        message,
+        continueSession: true,
+      });
     }
-    if (eventData.voting_end_date && new Date(eventData.voting_end_date) < now) {
+    if (
+      eventData.voting_end_date &&
+      new Date(eventData.voting_end_date) < now
+    ) {
       message = "Voting has ended.\n0. Back to main menu";
       sessionStore.set(sessionID, session);
-      return NextResponse.json({ message, continueSession: true });
+      return NextResponse.json({
+        userID,
+        sessionID,
+        msisdn,
+        message,
+        continueSession: true,
+      });
     }
 
     session.nomineeId = nominee.id;
     session.nomineeName = nominee.nominee_name;
-    session.eventId = (nominee.categories as unknown as { event_id: string })?.event_id;
+    session.eventId = (
+      nominee.categories as unknown as { event_id: string }
+    )?.event_id;
     session.categoryId = nominee.category_id;
     session.amountPerVote = eventData.amount_per_vote;
     session.serviceFee = eventData.service_fee;
@@ -112,7 +168,13 @@ export async function POST(req: NextRequest) {
 
     if (isNaN(votes) || votes <= 0) {
       message = "Enter a valid number:";
-      return NextResponse.json({ message, continueSession: true });
+      return NextResponse.json({
+        userID,
+        sessionID,
+        msisdn,
+        message,
+        continueSession: true,
+      });
     }
 
     const amount = votes * session.amountPerVote;
@@ -165,7 +227,7 @@ export async function POST(req: NextRequest) {
             headers: {
               Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
             },
-          }
+          },
         );
 
         // Save pending vote to Supabase
@@ -187,10 +249,10 @@ export async function POST(req: NextRequest) {
             organizerId: session.organizerId,
           },
         });
-
       } catch (err) {
         console.error("Paystack error:", err);
-        message = "Payment initialization failed. Please try again.\n0. Back to main menu";
+        message =
+          "Payment initialization failed. Please try again.\n0. Back to main menu";
         sessionStore.set(sessionID, session);
         return NextResponse.json({ message, continueSession: true });
       }
@@ -201,9 +263,7 @@ export async function POST(req: NextRequest) {
         `Thank you for voting for ${session.nomineeName}!`;
 
       continueSession = false;
-    }
-
-    else {
+    } else {
       message = "Cancelled. Thank you!";
       continueSession = false;
     }
@@ -212,6 +272,9 @@ export async function POST(req: NextRequest) {
   sessionStore.set(sessionID, session);
 
   return NextResponse.json({
+    userID,
+    sessionID,
+    msisdn,
     message,
     continueSession,
   });
