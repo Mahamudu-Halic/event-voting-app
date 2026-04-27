@@ -15,25 +15,31 @@ export async function POST(req: NextRequest) {
 
     sessionStore.set(sessionID, { level: 1 });
 
-    return NextResponse.json({
-      message,
-      userID,
-      sessionID,
-      msisdn,
-      continueSession: true,
-    });
+    return NextResponse.json(
+      {
+        message,
+        userID,
+        sessionID,
+        msisdn,
+        continueSession: true,
+      },
+      { headers: { "Content-Type": "application/json" } },
+    );
   }
 
   const session = sessionStore.get(sessionID);
 
   if (!session) {
-    return NextResponse.json({
-      userID,
-      sessionID,
-      msisdn,
-      message: "Session expired. Try again.",
-      continueSession: false,
-    });
+    return NextResponse.json(
+      {
+        userID,
+        sessionID,
+        msisdn,
+        message: "Session expired. Try again.",
+        continueSession: false,
+      },
+      { headers: { "Content-Type": "application/json" } },
+    );
   }
 
   let message = "";
@@ -48,6 +54,19 @@ export async function POST(req: NextRequest) {
       message = "Invalid option";
       continueSession = false;
     }
+
+    sessionStore.set(sessionID, session);
+
+    return NextResponse.json(
+      {
+        userID,
+        sessionID,
+        msisdn,
+        message,
+        continueSession,
+      },
+      { headers: { "Content-Type": "application/json" } },
+    );
   }
 
   // ---------------- LEVEL 2 ----------------
@@ -72,13 +91,16 @@ export async function POST(req: NextRequest) {
         session.level = 1;
       }
       sessionStore.set(sessionID, session);
-      return NextResponse.json({
-        userID,
-        sessionID,
-        msisdn,
-        message,
-        continueSession: true,
-      });
+      return NextResponse.json(
+        {
+          userID,
+          sessionID,
+          msisdn,
+          message,
+          continueSession: true,
+        },
+        { headers: { "Content-Type": "application/json" } },
+      );
     }
 
     // Check if event is approved and active
@@ -105,13 +127,16 @@ export async function POST(req: NextRequest) {
       message =
         "This nominee is not available for voting.\n0. Back to main menu";
       sessionStore.set(sessionID, session);
-      return NextResponse.json({
-        userID,
-        sessionID,
-        msisdn,
-        message,
-        continueSession: true,
-      });
+      return NextResponse.json(
+        {
+          userID,
+          sessionID,
+          msisdn,
+          message,
+          continueSession: true,
+        },
+        { headers: { "Content-Type": "application/json" } },
+      );
     }
 
     // Check if voting is open
@@ -122,13 +147,16 @@ export async function POST(req: NextRequest) {
     ) {
       message = "Voting has not started yet.\n0. Back to main menu";
       sessionStore.set(sessionID, session);
-      return NextResponse.json({
-        userID,
-        sessionID,
-        msisdn,
-        message,
-        continueSession: true,
-      });
+      return NextResponse.json(
+        {
+          userID,
+          sessionID,
+          msisdn,
+          message,
+          continueSession: true,
+        },
+        { headers: { "Content-Type": "application/json" } },
+      );
     }
     if (
       eventData.voting_end_date &&
@@ -136,13 +164,16 @@ export async function POST(req: NextRequest) {
     ) {
       message = "Voting has ended.\n0. Back to main menu";
       sessionStore.set(sessionID, session);
-      return NextResponse.json({
-        userID,
-        sessionID,
-        msisdn,
-        message,
-        continueSession: true,
-      });
+      return NextResponse.json(
+        {
+          userID,
+          sessionID,
+          msisdn,
+          message,
+          continueSession: true,
+        },
+        { headers: { "Content-Type": "application/json" } },
+      );
     }
 
     session.nomineeId = nominee.id;
@@ -160,6 +191,19 @@ export async function POST(req: NextRequest) {
       `Nominee: ${session.nomineeName}\n` +
       `Price per vote: GHS ${session.amountPerVote}\n` +
       "Enter number of votes:";
+
+    sessionStore.set(sessionID, session);
+
+    return NextResponse.json(
+      {
+        userID,
+        sessionID,
+        msisdn,
+        message,
+        continueSession,
+      },
+      { headers: { "Content-Type": "application/json" } },
+    );
   }
 
   // ---------------- LEVEL 3 ----------------
@@ -168,13 +212,16 @@ export async function POST(req: NextRequest) {
 
     if (isNaN(votes) || votes <= 0) {
       message = "Enter a valid number:";
-      return NextResponse.json({
-        userID,
-        sessionID,
-        msisdn,
-        message,
-        continueSession: true,
-      });
+      return NextResponse.json(
+        {
+          userID,
+          sessionID,
+          msisdn,
+          message,
+          continueSession: true,
+        },
+        { headers: { "Content-Type": "application/json" } },
+      );
     }
 
     const amount = votes * session.amountPerVote;
@@ -192,6 +239,19 @@ export async function POST(req: NextRequest) {
       `Price per vote: GHS ${session.amountPerVote}\n` +
       `Total: GHS ${totalAmount}\n` +
       `1. Confirm\n2. Cancel`;
+
+    sessionStore.set(sessionID, session);
+
+    return NextResponse.json(
+      {
+        userID,
+        sessionID,
+        msisdn,
+        message,
+        continueSession,
+      },
+      { headers: { "Content-Type": "application/json" } },
+    );
   }
 
   // ---------------- LEVEL 4 ----------------
@@ -254,7 +314,16 @@ export async function POST(req: NextRequest) {
         message =
           "Payment initialization failed. Please try again.\n0. Back to main menu";
         sessionStore.set(sessionID, session);
-        return NextResponse.json({ message, continueSession: true });
+        return NextResponse.json(
+          {
+            userID,
+            sessionID,
+            msisdn,
+            message,
+            continueSession: true,
+          },
+          { headers: { "Content-Type": "application/json" } },
+        );
       }
 
       message =
@@ -263,19 +332,48 @@ export async function POST(req: NextRequest) {
         `Thank you for voting for ${session.nomineeName}!`;
 
       continueSession = false;
+
+      sessionStore.set(sessionID, session);
+
+      return NextResponse.json(
+        {
+          userID,
+          sessionID,
+          msisdn,
+          message,
+          continueSession,
+        },
+        { headers: { "Content-Type": "application/json" } },
+      );
     } else {
       message = "Cancelled. Thank you!";
       continueSession = false;
+
+      sessionStore.set(sessionID, session);
+
+      return NextResponse.json(
+        {
+          userID,
+          sessionID,
+          msisdn,
+          message,
+          continueSession,
+        },
+        { headers: { "Content-Type": "application/json" } },
+      );
     }
   }
 
   sessionStore.set(sessionID, session);
 
-  return NextResponse.json({
-    userID,
-    sessionID,
-    msisdn,
-    message,
-    continueSession,
-  });
+  return NextResponse.json(
+    {
+      userID,
+      sessionID,
+      msisdn,
+      message,
+      continueSession,
+    },
+    { headers: { "Content-Type": "application/json" } },
+  );
 }
