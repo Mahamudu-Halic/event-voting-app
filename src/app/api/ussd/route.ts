@@ -1,8 +1,187 @@
 import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
-const sessionStore = new Map<string, any>();
+const sessionStore = new Map<string, Record<string, unknown>>();
+
+// Process vote when payment succeeds - updates nominee votes, event revenue, organizer account
+async function processVote(session: Record<string, any>, msisdn: string) {
+  const supabase = await createClient();
+  const now = new Date();
+
+  const {
+    nomineeId,
+    eventId,
+    votes,
+    amount,
+    reference,
+    organizerId,
+    nomineeCode,
+    nomineeName,
+    categoryId,
+  } = session;
+
+  if (!nomineeId || !eventId || !votes) {
+    throw new Error("Missing required session data for vote processing");
+  }
+
+  // Get nominee details
+  const { data: nominee, error: nomineeError } = await supabase
+    .from("nominees")
+    .select("id, votes_count")
+    .eq("id", nomineeId)
+    .eq("is_active", true)
+    .single();
+
+  if (nomineeError || !nominee) {
+    throw new Error("Nominee not found");
+  }
+
+  // Update nominee vote count
+  const { error: updateNomineeError } = await supabase
+    .from("nominees")
+    .update({
+      votes_count: (nominee.votes_count || 0) + votes,
+      updated_at: now.toISOString(),
+    })
+    .eq("id", nomineeId);
+
+  if (updateNomineeError) {
+    throw new Error(`Failed to update nominee votes: ${updateNomineeError.message}`);
+  }
+
+  console.log(`Updated nominee ${nomineeId} votes: ${nominee.votes_count} -> ${(nominee.votes_count || 0) + votes}`);
+
+  // Get event details for revenue update
+  const { data: event, error: eventError } = await supabase
+    .from("events")
+    .select("total_revenue, service_fee, created_by")
+    .eq("id", eventId)
+    .single();
+
+  if (!eventError && event) {
+    // Update event total_revenue
+    await supabase
+      .from("events")
+      .update({
+        total_revenue: (event.total_revenue || 0) + amount,
+        updated_at: now.toISOString(),
+      })
+      .eq("id", eventId);
+
+    // Credit organizer account
+    const serviceFeeAmount = amount * (event.service_fee / 100);
+    const netAmount = amount - serviceFeeAmount;
+    const organizerUserId = organizerId || event.created_by;
+
+    try {
+      const adminClient = await createAdminClient();
+
+      if (organizerUserId) {
+        const { data: account } = await adminClient
+          .from("accounts")
+          .select("id, balance, total_earned")
+          .eq("user_id", organizerUserId)
+          .single();
+
+        if (account) {
+          await adminClient
+            .from("accounts")
+            .update({
+              balance: (account.balance || 0) + netAmount,
+              total_earned: (account.total_earned || 0) + netAmount,
+              updated_at: now.toISOString(),
+            })
+            .eq("id", account.id);
+        } else {
+          await adminClient.from("accounts").insert({
+            user_id: organizerUserId,
+            balance: netAmount,
+            total_earned: netAmount,
+            total_withdrawn: 0,
+          });
+        }
+      }
+    } catch (accountError) {
+      console.error("Error crediting organizer account:", accountError);
+      // Don't throw - vote was already recorded
+    }
+
+    // Record transaction
+    try {
+      const adminClient = await createAdminClient();
+      await adminClient.from("transactions").insert({
+        user_id: organizerUserId,
+        type: "vote_payment",
+        amount: amount,
+        fee: serviceFeeAmount,
+        net_amount: netAmount,
+        reference: reference,
+        status: "completed",
+        metadata: {
+          nominee_id: nomineeId,
+          nominee_code: nomineeCode,
+          nominee_name: nomineeName,
+          event_id: eventId,
+          category_id: categoryId,
+          votes: votes,
+          msisdn: msisdn,
+          source: "ussd",
+        },
+      });
+    } catch (txError) {
+      console.error("Error recording transaction:", txError);
+    }
+  }
+
+  // Update pending vote status
+  await supabase
+    .from("pending_votes")
+    .update({
+      status: "completed",
+      completed_at: now.toISOString(),
+    })
+    .eq("reference", reference);
+
+  console.log("Vote processed successfully via processVote:", {
+    nomineeId,
+    votes,
+    amount,
+  });
+}
+
+// Detect Ghana mobile money provider from phone number
+// Returns: mtn, vod, tigo, or null if unknown
+function detectProvider(phone: string): string | null {
+  // Remove + and any non-digits
+  const clean = phone.replace(/\D/g, "");
+  
+  // Remove leading 0 if present
+  const normalized = clean.startsWith("0") ? clean.slice(1) : clean;
+  
+  // Ghana prefixes after removing country code
+  const withoutCountryCode = normalized.startsWith("233") 
+    ? normalized.slice(3) 
+    : normalized;
+  
+  // MTN: 024, 054, 055, 059, 0244, 025, 053, 056
+  if (/^(24|54|55|59|244|25|53|56)/.test(withoutCountryCode)) {
+    return "mtn";
+  }
+  
+  // Vodafone: 020, 050
+  if (/^(20|50)/.test(withoutCountryCode)) {
+    return "vod";
+  }
+  
+  // AirtelTigo (formerly Tigo): 027, 057, 026, 056
+  if (/^(27|57|26)/.test(withoutCountryCode)) {
+    return "tigo";
+  }
+  
+  return null;
+}
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -10,7 +189,22 @@ export async function POST(req: NextRequest) {
   const { sessionID, userID, newSession, msisdn, userData } = body;
 
   // ---------------- NEW SESSION ----------------
+  console.log(userData);
   if (newSession) {
+    if (userData !== "*928*3454#") {
+      return NextResponse.json(
+        {
+          userID,
+          sessionID,
+          msisdn,
+          message: "Invlid input",
+          continueSession: false,
+        },
+        {
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
     const message = "Welcome to Tomame\n" + "1. Vote for a nominee";
 
     sessionStore.set(sessionID, { level: 1 });
@@ -261,14 +455,23 @@ export async function POST(req: NextRequest) {
 
       const reference = `VOTE_${Date.now()}_${sessionID.slice(0, 8)}`;
 
+      // Detect mobile money provider from phone number
+      const provider = detectProvider(msisdn);
+      if (!provider) {
+        throw new Error("Could not detect mobile money provider from phone number");
+      }
+
       try {
-        await axios.post(
-          "https://api.paystack.co/transaction/initialize",
+        const paystackResponse = await axios.post(
+          "https://api.paystack.co/charge",
           {
             email: `${msisdn}@ussd.com`,
             amount: session.amount * 100, // pesewas
             reference,
-            channels: ["mobile_money"],
+            mobile_money: {
+              phone: msisdn,
+              provider: provider,
+            },
             metadata: {
               nomineeId: session.nomineeId,
               nomineeCode: session.nomineeCode,
@@ -286,9 +489,15 @@ export async function POST(req: NextRequest) {
           {
             headers: {
               Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+              "Content-Type": "application/json",
             },
           },
         );
+
+        console.log("Paystack charge response:", paystackResponse.data);
+
+        const chargeData = paystackResponse.data.data;
+        console.log("Charge status:", chargeData.status);
 
         // Save pending vote to Supabase
         const supabase = await createClient();
@@ -309,8 +518,72 @@ export async function POST(req: NextRequest) {
             organizerId: session.organizerId,
           },
         });
+
+        // Check if the charge requires OTP
+        if (chargeData.status === "send_otp") {
+          // Paystack requires OTP verification
+          session.reference = reference;
+          session.level = 5;
+
+          message =
+            `Enter the OTP code sent to your phone\n` +
+            `by Paystack to complete payment:`;
+
+          sessionStore.set(sessionID, session);
+
+          return NextResponse.json(
+            {
+              userID,
+              sessionID,
+              msisdn,
+              message,
+              continueSession: true,
+            },
+            { headers: { "Content-Type": "application/json" } },
+          );
+        }
+
+        // For other statuses, show success message
+        if (chargeData.status === "success") {
+          // Payment succeeded immediately - process vote now
+          try {
+            await processVote(session, msisdn);
+            message =
+              `Payment successful!\n` +
+              `Thank you for voting for ${session.nomineeName}!`;
+          } catch (voteError) {
+            console.error("Error processing vote:", voteError);
+            message =
+              `Payment successful but vote recording failed.\n` +
+              `Please contact support with ref: ${reference}`;
+          }
+        } else {
+          // pay_offline or pending - mobile money prompt sent, wait for webhook
+          message =
+            `Payment prompt sent.\n` +
+            `Approve GHS ${session.amount} on your phone.\n` +
+            `Thank you for voting for ${session.nomineeName}!`;
+        }
+
+        continueSession = false;
+
+        sessionStore.set(sessionID, session);
+
+        return NextResponse.json(
+          {
+            userID,
+            sessionID,
+            msisdn,
+            message,
+            continueSession,
+          },
+          { headers: { "Content-Type": "application/json" } },
+        );
       } catch (err) {
-        console.error("Paystack error:", err);
+        const errorData = err && typeof err === "object" && "response" in err
+          ? (err as { response?: { data?: unknown } }).response?.data
+          : err;
+        console.error("Paystack charge error:", errorData || err);
         message =
           "Payment initialization failed. Please try again.\n0. Back to main menu";
         sessionStore.set(sessionID, session);
@@ -325,26 +598,6 @@ export async function POST(req: NextRequest) {
           { headers: { "Content-Type": "application/json" } },
         );
       }
-
-      message =
-        `Payment prompt sent.\n` +
-        `Approve GHS ${session.amount} on your phone.\n` +
-        `Thank you for voting for ${session.nomineeName}!`;
-
-      continueSession = false;
-
-      sessionStore.set(sessionID, session);
-
-      return NextResponse.json(
-        {
-          userID,
-          sessionID,
-          msisdn,
-          message,
-          continueSession,
-        },
-        { headers: { "Content-Type": "application/json" } },
-      );
     } else {
       message = "Cancelled. Thank you!";
       continueSession = false;
@@ -362,6 +615,126 @@ export async function POST(req: NextRequest) {
         { headers: { "Content-Type": "application/json" } },
       );
     }
+  }
+
+  // ---------------- LEVEL 5 (OTP Verification) ----------------
+  else if (session.level === 5) {
+    const otpCode = userData.trim();
+
+    if (!otpCode || otpCode.length < 3) {
+      message = "Invalid OTP. Please enter the code sent by Paystack:";
+      return NextResponse.json(
+        {
+          userID,
+          sessionID,
+          msisdn,
+          message,
+          continueSession: true,
+        },
+        { headers: { "Content-Type": "application/json" } },
+      );
+    }
+
+    try {
+      // Submit OTP to Paystack
+      const otpResponse = await axios.post(
+        "https://api.paystack.co/charge/submit_otp",
+        {
+          otp: otpCode,
+          reference: session.reference,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      console.log("OTP submission response:", otpResponse.data);
+
+      const chargeData = otpResponse.data.data;
+
+      // If payment succeeded immediately, process vote now (don't wait for webhook)
+      if (chargeData.status === "success") {
+        try {
+          await processVote(session, msisdn);
+          message =
+            `Payment successful!\n` +
+            `Thank you for voting for ${session.nomineeName}!`;
+        } catch (voteError) {
+          console.error("Error processing vote after OTP:", voteError);
+          message =
+            `Payment successful but vote recording failed.\n` +
+            `Please contact support with ref: ${session.reference}`;
+        }
+      } else if (chargeData.status === "pending") {
+        message =
+          `Payment is being processed.\n` +
+          `You will receive a confirmation.\n` +
+          `Thank you for voting for ${session.nomineeName}!`;
+      } else {
+        message =
+          `Payment status: ${chargeData.status}\n` +
+          `Please check your phone for further instructions.`;
+      }
+
+      continueSession = false;
+    } catch (err) {
+      const errorData = err && typeof err === "object" && "response" in err
+        ? (err as { response?: { data?: { message?: string } } }).response?.data
+        : err;
+      console.error("OTP submission error:", errorData || err);
+
+      const errorMessage = errorData && typeof errorData === "object" && "message" in errorData
+        ? errorData.message
+        : "Failed to verify OTP";
+
+      message =
+        `OTP verification failed: ${errorMessage}\n` +
+        `1. Try again\n` +
+        `0. Cancel`;
+
+      session.level = 6; // Retry OTP level
+    }
+
+    sessionStore.set(sessionID, session);
+
+    return NextResponse.json(
+      {
+        userID,
+        sessionID,
+        msisdn,
+        message,
+        continueSession,
+      },
+      { headers: { "Content-Type": "application/json" } },
+    );
+  }
+
+  // ---------------- LEVEL 6 (Retry OTP) ----------------
+  else if (session.level === 6) {
+    if (userData === "1") {
+      message = "Enter the OTP code sent to your phone:";
+      session.level = 5;
+      continueSession = true;
+    } else {
+      message = "Cancelled. Thank you!";
+      continueSession = false;
+    }
+
+    sessionStore.set(sessionID, session);
+
+    return NextResponse.json(
+      {
+        userID,
+        sessionID,
+        msisdn,
+        message,
+        continueSession,
+      },
+      { headers: { "Content-Type": "application/json" } },
+    );
   }
 
   sessionStore.set(sessionID, session);
