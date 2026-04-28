@@ -3,7 +3,23 @@ import axios from "axios";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-const sessionStore = new Map<string, Record<string, unknown>>();
+interface USSDSession {
+  eventId?: string;
+  categoryId?: string;
+  nomineeId?: string;
+  nomineeCode?: string;
+  nomineeName?: string;
+  votes?: number;
+  amount?: number;
+  amountPerVote?: number;
+  serviceFee?: number;
+  level?: number;
+  reference?: string;
+  organizerId?: string;
+  [key: string]: unknown;
+}
+
+const sessionStore = new Map<string, USSDSession>();
 
 // Process vote when payment succeeds - updates nominee votes, event revenue, organizer account
 async function processVote(session: Record<string, any>, msisdn: string) {
@@ -418,8 +434,22 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (!session.amountPerVote || !session.serviceFee) {
+      message = "Session error. Please start again.";
+      sessionStore.delete(sessionID);
+      return NextResponse.json(
+        {
+          userID,
+          sessionID,
+          msisdn,
+          message,
+          continueSession: false,
+        },
+        { headers: { "Content-Type": "application/json" } },
+      );
+    }
+
     const amount = votes * session.amountPerVote;
-    const serviceFeeAmount = amount * (session.serviceFee / 100);
     const totalAmount = amount;
 
     session.votes = votes;
@@ -466,7 +496,7 @@ export async function POST(req: NextRequest) {
           "https://api.paystack.co/charge",
           {
             email: `${msisdn}@ussd.com`,
-            amount: session.amount * 100, // pesewas
+            amount: (session.amount || 0) * 100, // pesewas
             reference,
             mobile_money: {
               phone: msisdn,
