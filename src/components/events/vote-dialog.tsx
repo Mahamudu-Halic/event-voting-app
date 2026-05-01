@@ -35,10 +35,14 @@ export function VoteDialog({
   currency = "NGN", // Default to NGN for broader compatibility
 }: VoteDialogProps) {
   const DEFAULT_VOTER_EMAIL = "tomame247@gmail.com";
+  const APP_URL = process.env.NEXT_PUBLIC_APP_URL;
+
+  const router = useRouter()
 
   const [voteCount, setVoteCount] = useState(1);
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
   const [voterName, setVoterName] = useState("");
   const [showPaymentForm, setShowPaymentForm] = useState(false);
   const [result, setResult] = useState<{
@@ -71,8 +75,8 @@ export function VoteDialog({
       // Generate unique payment reference
       const reference = generatePaymentReference();
 
-      // Initialize Paystack payment
-      const callbackUrl = `${window.location.origin}/events/${eventId}/verify-payment`;
+      // Initialize Paystack payment with API callback
+      const callbackUrl = `${process.env.NEXT_PUBLIC_APP_UR}/api/verify-payment`;
 
       // Close dialog before opening Paystack
       setIsOpen(false);
@@ -92,10 +96,54 @@ export function VoteDialog({
             voter_email: DEFAULT_VOTER_EMAIL,
             voter_name: voterName || undefined,
           },
+          onSuccess: async (response) => {
+            // Payment successful - verify and process via API
+            setIsVerifying(true);
+            setIsOpen(true);
+            try {
+              const verifyResponse = await fetch('/api/verify-payment', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  reference: response.reference,
+                  eventId,
+                }),
+              });
+
+              const result = await verifyResponse.json();
+
+              setResult({
+                success: result.success,
+                message: result.message,
+                totalAmount: result.totalAmount || totalAmount,
+              });
+              setIsVerifying(false);
+              setIsSubmitting(false);
+              router.refresh()
+            } catch (error) {
+              console.error('Payment verification error:', error);
+              setResult({
+                success: false,
+                message: 'Payment successful but verification failed',
+              });
+              setIsVerifying(false);
+              setIsSubmitting(false);
+            }
+          },
+          onCancel: () => {
+            // Payment cancelled - reopen dialog
+            setIsOpen(true);
+            setIsSubmitting(false);
+          },
+          onClose: () => {
+            // Payment modal closed without completing
+            setIsOpen(true);
+            setIsSubmitting(false);
+          },
         });
       }, 300);
-
-      // Payment popup will open, and on success it will redirect to callbackUrl
     } catch (error) {
       setResult({
         success: false,
@@ -113,6 +161,7 @@ export function VoteDialog({
       setResult(null);
       setVoterName("");
       setShowPaymentForm(false);
+      setIsVerifying(false);
     }, 200);
   };
 
@@ -138,7 +187,16 @@ export function VoteDialog({
         </Button>
       </DialogTrigger>
       <DialogContent className="bg-purple-bg border-purple-accent/30 sm:max-w-md">
-        {!result ? (
+        {isVerifying ? (
+          /* Verification Loading State */
+          <div className="text-center py-8">
+            <div className="w-16 h-16 rounded-full bg-gold-primary/20 flex items-center justify-center mx-auto mb-4">
+              <Loader2 className="h-8 w-8 text-gold-primary animate-spin" />
+            </div>
+            <DialogTitle className="text-text-primary mb-2">Verifying Payment</DialogTitle>
+            <p className="text-text-secondary">Please wait while we verify your payment...</p>
+          </div>
+        ) : !result ? (
           <>
             <DialogHeader>
               <DialogTitle className="text-text-primary">Cast Your Vote</DialogTitle>

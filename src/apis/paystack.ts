@@ -2,7 +2,7 @@ interface PaystackInitializeParams {
   email: string;
   amount: number; // in kobo/pesewas (multiply GHS by 100)
   reference: string;
-  callback_url: string;
+  callback_url?: string; // Optional - for backward compatibility
   currency?: "GHS" | "NGN"; // Paystack currency
   metadata: {
     event_id: string;
@@ -11,6 +11,9 @@ interface PaystackInitializeParams {
     voter_email?: string;
     voter_name?: string;
   };
+  onSuccess?: (response: { reference: string }) => void;
+  onCancel?: () => void;
+  onClose?: () => void;
 }
 
 interface PaystackInitializeResponse {
@@ -101,12 +104,22 @@ export function initializePaystackPayment(params: PaystackInitializeParams): voi
         voter_name: params.metadata.voter_name || "",
       },
       callback: (response: { reference: string }) => {
-        // Redirect to verify page with reference
-        window.location.href = `${params.callback_url}?reference=${response.reference}`;
+        // Use custom success handler if provided, otherwise redirect
+        if (params.onSuccess) {
+          params.onSuccess(response);
+        } else if (params.callback_url) {
+          window.location.href = `${params.callback_url}?reference=${response.reference}`;
+        }
       },
       onClose: () => {
-        // User closed the popup
-        console.log("Payment cancelled by user");
+        // Use custom close handler if provided, otherwise just log
+        if (params.onClose) {
+          params.onClose();
+        } else if (params.onCancel) {
+          params.onCancel();
+        } else {
+          console.log("Payment cancelled by user");
+        }
       },
     });
 
