@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
       const { error: updateNomineeError } = await supabase
         .from("nominees")
         .update({
-          votes_count: (nominee.votes_count || 0) + votes,
+          votes_count: Number(nominee.votes_count || 0) + Number(votes),
           updated_at: now.toISOString(),
         })
         .eq("id", nomineeId);
