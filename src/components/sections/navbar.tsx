@@ -73,7 +73,7 @@ export function Navbar({ className }: NavbarProps) {
             </Button>
             <Button
               size="sm"
-              className="bg-gold-primary text-text-tertiary hover:bg-gold-dark font-medium"
+              className="bg-gold-primary text-text-tertiary hover:text-white hover:bg-gold-dark font-medium"
               asChild
             >
               <Link href="/auth/signup">Get Started</Link>
@@ -142,7 +142,7 @@ export function Navbar({ className }: NavbarProps) {
                 <div className="p-4 border-t border-purple-accent/20 space-y-3">
                   <Button
                     variant="outline"
-                    className="w-full border-purple-accent text-text-primary hover:bg-purple-surface"
+                    className="w-full border-purple-accent hover:bg-purple-surface"
                     asChild
                   >
                     <Link href="/auth/login" onClick={() => setIsOpen(false)}>

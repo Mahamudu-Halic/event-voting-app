@@ -138,14 +138,14 @@ export async function getVotingSummary(eventId: string): Promise<VotingSummary> 
       )
     `)
     .eq("is_active", true)
-    .eq("categories.event_id", eventId)
-    .eq("categories.is_active", true)
+    .eq("event_id", eventId)
+    .eq("is_active", true)
 
   if (error) {
     console.error("Error fetching voting summary:", error)
     throw new Error("Failed to fetch voting summary")
   }
-
+  
   const nominees = data || []
   const total_votes = nominees.reduce((sum: number, n: any) => sum + (n.votes_count || 0), 0)
 

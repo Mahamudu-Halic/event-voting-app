@@ -259,7 +259,7 @@ export default function AboutPage() {
                 </Button>
                 <Button
                   variant="outline"
-                  className="border-purple-accent text-text-primary hover:bg-purple-surface"
+                  className="border-purple-accent hover:bg-purple-surface"
                   size="lg"
                 >
                   Contact Sales

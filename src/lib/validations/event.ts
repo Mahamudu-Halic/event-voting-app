@@ -53,6 +53,7 @@ export interface Event {
   updated_at: string
   deleted_at: string | null
   is_active: boolean
+  total_revenue: number
 }
 
 // Event with creator info (for admin views)
@@ -141,6 +142,7 @@ export function toDatabaseEvent(
     service_fee: parseInt(formData.serviceFee),
     approval_status: 'pending',
     is_active: true,
+    total_revenue: 0,
     // Default dates set to current date and 7 days later
     nomination_start_date: now.toISOString(),
     nomination_end_date: sevenDaysLater.toISOString(),

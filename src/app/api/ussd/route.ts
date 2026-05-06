@@ -67,7 +67,6 @@ async function processVote(session: Record<string, any>, msisdn: string) {
     throw new Error(`Failed to update nominee votes: ${updateNomineeError.message}`);
   }
 
-  console.log(`Updated nominee ${nomineeId} votes: ${nominee.votes_count} -> ${(nominee.votes_count || 0) + votes}`);
 
   // Get event details for revenue update
   const { data: event, error: eventError } = await supabase
@@ -160,11 +159,6 @@ async function processVote(session: Record<string, any>, msisdn: string) {
     })
     .eq("reference", reference);
 
-  console.log("Vote processed successfully via processVote:", {
-    nomineeId,
-    votes,
-    amount,
-  });
 }
 
 // Detect Ghana mobile money provider from phone number
@@ -205,7 +199,6 @@ export async function POST(req: NextRequest) {
   const { sessionID, userID, newSession, msisdn, userData } = body;
 
   // ---------------- NEW SESSION ----------------
-  console.log(userData);
   if (newSession) {
     if (userData !== "*928*3454#") {
       return NextResponse.json(
@@ -524,14 +517,10 @@ export async function POST(req: NextRequest) {
           },
         );
 
-        console.log("Paystack charge response:", paystackResponse.data);
-
         const chargeData = paystackResponse.data.data;
-        console.log("Charge status:", chargeData.status);
-
         // Save pending vote to Supabase
         const supabase = await createClient();
-        await supabase.from("pending_votes").insert({
+        const { error: pendingVoteError } = await supabase.from("pending_votes").insert({
           reference,
           nominee_id: session.nomineeId,
           event_id: session.eventId,
@@ -548,6 +537,10 @@ export async function POST(req: NextRequest) {
             organizerId: session.organizerId,
           },
         });
+
+        if (pendingVoteError) {
+          console.error("Error saving pending vote:", pendingVoteError);
+        }
 
         // Check if the charge requires OTP
         if (chargeData.status === "send_otp") {
@@ -680,8 +673,6 @@ export async function POST(req: NextRequest) {
           },
         },
       );
-
-      console.log("OTP submission response:", otpResponse.data);
 
       const chargeData = otpResponse.data.data;
 

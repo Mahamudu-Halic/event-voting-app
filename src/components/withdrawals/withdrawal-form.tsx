@@ -221,7 +221,7 @@ export function WithdrawalForm({ maxAmount, onSuccess, onCancel }: WithdrawalFor
               variant="outline"
               onClick={onCancel}
               disabled={isSubmitting}
-              className="flex-1 border-purple-accent text-text-primary hover:bg-purple-surface"
+              className="flex-1 border-purple-accent hover:bg-purple-surface"
             >
               Cancel
             </Button>

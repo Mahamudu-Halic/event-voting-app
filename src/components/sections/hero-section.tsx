@@ -56,7 +56,7 @@ export function HeroSection() {
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
               <Button
                 size="lg"
-                className="bg-gold-primary text-text-tertiary hover:bg-gold-dark font-semibold px-8 h-12 text-base group"
+                className="bg-gold-primary text-text-tertiary hover:text-white hover:bg-gold-dark font-semibold px-8 h-12 text-base group"
                 asChild
               >
                 <Link href="/auth/signup">
@@ -67,7 +67,7 @@ export function HeroSection() {
               <Button
                 variant="outline"
                 size="lg"
-                className="border-purple-accent text-text-primary hover:bg-purple-surface px-8 h-12 text-base"
+                className="border-purple-accent hover:text-white hover:bg-purple-surface px-8 h-12 text-base"
                 asChild
               >
                 <Link href="/login">

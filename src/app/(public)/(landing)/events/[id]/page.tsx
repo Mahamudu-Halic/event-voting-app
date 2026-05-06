@@ -139,7 +139,7 @@ export default async function EventPage({ params, searchParams }: Props) {
               <SheetTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-fit border-purple-accent text-text-primary hover:bg-purple-surface"
+                  className="w-fit border-purple-accent hover:text-text-primary hover:bg-purple-surface"
                 >
                   <Info className="mr-2 h-4 w-4" />
                   View Full Details

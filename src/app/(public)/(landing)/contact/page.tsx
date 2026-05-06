@@ -22,20 +22,20 @@ const contactInfo = [
   {
     icon: Mail,
     title: "Email",
-    value: "support@tomame.com",
+    value: "tomame247@gmail.com",
     description: "For general inquiries and support",
   },
   {
     icon: Phone,
     title: "Phone",
-    value: "+1 (555) 123-4567",
-    description: "Mon-Fri from 9am to 6pm EST",
+    value: "+233 20 061 1889",
+    description: "Mon-Fri from 9am to 6pm GMT",
   },
   {
     icon: MapPin,
     title: "Office",
-    value: "San Francisco, CA",
-    description: "123 Innovation Drive, Suite 100",
+    value: "Kumasi, Ghana",
+    description: "",
   },
   {
     icon: Clock,
@@ -54,7 +54,7 @@ const faqs = [
   {
     question: "What payment methods do you accept?",
     answer:
-      "We accept all major credit cards, PayPal, and bank transfers for enterprise customers.",
+      "We accept all major credit cards, and bank transfers for enterprise customers.",
   },
   {
     question: "Is there a free trial?",
@@ -96,7 +96,7 @@ export default function ContactPage() {
           </div>
 
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-text-primary mb-6">
-            We'd Love to Hear
+            We&apos;d Love to Hear
             <br />
             <span className="text-gold-primary">From You</span>
           </h1>
@@ -157,7 +157,7 @@ export default function ContactPage() {
                       Message Sent!
                     </h3>
                     <p className="text-text-secondary">
-                      Thank you for reaching out. We'll get back to you within 24 hours.
+                      Thank you for reaching out. We&apos;ll get back to you within 24 hours.
                     </p>
                   </div>
                 ) : (

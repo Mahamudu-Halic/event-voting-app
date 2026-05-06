@@ -45,6 +45,7 @@ import {
 import { CategoryWithNominees } from "@/lib/validations/category";
 import { Event } from "@/lib/validations/event";
 import { toast } from "sonner";
+import Link from "next/link";
 
 interface PageProps {
   params: Promise<{
@@ -260,7 +261,7 @@ export default function EventDetailsPage({ params }: PageProps) {
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="flex items-center gap-3 mb-2">
-                        <h1 className="text-3xl font-bold bg-linear-to-r from-white via-purple-200 to-purple-400 bg-clip-text text-transparent">
+                        <h1 className="text-3xl font-bold  bg-clip-text text-white">
                           {event.event_name}
                         </h1>
                         <Badge className="bg-linear-to-r from-violet-500/30 to-purple-500/30 text-purple-200 border-purple-500/40">
@@ -326,12 +327,8 @@ export default function EventDetailsPage({ params }: PageProps) {
                   <div className="flex items-start justify-between">
                     <div className="space-y-3">
                       <p className="text-text-secondary text-sm font-medium">Total Revenue</p>
-                      <p className="text-3xl font-bold text-text-primary">₵0.00</p>
-                      <div className="flex items-center gap-1 text-xs">
-                        <TrendingUp className="h-3 w-3 text-emerald-400" />
-                        <span className="text-emerald-400 font-medium">+0%</span>
-                        <span className="text-text-tertiary">this week</span>
-                      </div>
+                      <p className="text-3xl font-bold text-text-primary">₵{event.total_revenue}</p>
+                     
                     </div>
                     <div className="p-3 rounded-xl bg-linear-to-br from-violet-500 to-purple-600 shadow-lg">
                       <DollarSign className="h-6 w-6 text-white" />
@@ -352,10 +349,8 @@ export default function EventDetailsPage({ params }: PageProps) {
                   <div className="flex items-start justify-between">
                     <div className="space-y-3">
                       <p className="text-text-secondary text-sm font-medium">Withdrawable Earnings</p>
-                      <p className="text-3xl font-bold text-text-primary">₵0.00</p>
-                      <div className="flex items-center gap-1 text-xs">
-                        <span className="text-text-tertiary">Available now</span>
-                      </div>
+                      <p className="text-3xl font-bold text-text-primary">₵{event.total_revenue - ((event.service_fee / 100) * event.total_revenue)}</p>
+                     
                     </div>
                     <div className="p-3 rounded-xl bg-linear-to-br from-emerald-500 to-teal-500 shadow-lg">
                       <Wallet className="h-6 w-6 text-white" />
@@ -364,9 +359,12 @@ export default function EventDetailsPage({ params }: PageProps) {
                   <Button
                     className="mt-4 bg-linear-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white rounded-xl shadow-lg shadow-violet-500/25"
                     size="sm"
+                    asChild
                   >
-                    Withdraw Funds
-                    <ChevronRight className="h-4 w-4 ml-1" />
+                    <Link href="/organizer/withdraw">
+                      Withdraw Funds
+                      <ChevronRight className="h-4 w-4 ml-1" />
+                    </Link>
                   </Button>
                 </CardContent>
               </Card>
@@ -536,7 +534,7 @@ export default function EventDetailsPage({ params }: PageProps) {
                       size="sm"
                       onClick={() => setPage(page - 1)}
                       disabled={page === 1}
-                      className="h-10 px-4 border-white/20 text-white hover:bg-white/10 hover:text-white rounded-xl transition-all disabled:opacity-50"
+                      className="h-10 px-4 border-white/20  hover:bg-white/10 hover:text-white rounded-xl transition-all disabled:opacity-50"
                     >
                       <ChevronLeft className="h-4 w-4 mr-1" />
                       Previous
@@ -549,7 +547,7 @@ export default function EventDetailsPage({ params }: PageProps) {
                       size="sm"
                       onClick={() => setPage(page + 1)}
                       disabled={page === totalPages}
-                      className="h-10 px-4 border-white/20 text-white hover:bg-white/10 hover:text-white rounded-xl transition-all disabled:opacity-50"
+                      className="h-10 px-4 border-white/20 hover:bg-white/10 hover:text-white rounded-xl transition-all disabled:opacity-50"
                     >
                       Next
                       <ChevronRight className="h-4 w-4 ml-1" />

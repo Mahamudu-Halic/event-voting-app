@@ -237,7 +237,7 @@ export function VoteDialog({
                   type="button"
                   variant="outline"
                   size="icon"
-                  className="border-purple-accent text-text-primary hover:bg-purple-surface"
+                  className="border-purple-accent hover:text-white hover:bg-purple-surface"
                   onClick={() => handleVoteCountChange(voteCount - 1)}
                   disabled={voteCount <= 1}
                 >
@@ -256,7 +256,7 @@ export function VoteDialog({
                   type="button"
                   variant="outline"
                   size="icon"
-                  className="border-purple-accent text-text-primary hover:bg-purple-surface"
+                  className="border-purple-accent hover:text-white hover:bg-purple-surface"
                   onClick={() => handleVoteCountChange(voteCount + 1)}
                   disabled={voteCount >= 1000}
                 >
@@ -328,7 +328,7 @@ export function VoteDialog({
                   <Button
                     variant="outline"
                     onClick={() => setShowPaymentForm(false)}
-                    className="w-full border-purple-accent text-text-primary hover:bg-purple-surface"
+                    className="w-full border-purple-accent hover:text-white hover:bg-purple-surface"
                   >
                     Back
                   </Button>

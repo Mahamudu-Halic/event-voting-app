@@ -56,7 +56,6 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true)
 
   const fetchDashboardData = useCallback(async () => {
-    setIsLoading(true)
     try {
       // Fetch events and basic stats
       const [eventsResult, eventStats] = await Promise.all([
@@ -108,6 +107,7 @@ export default function DashboardPage() {
   }, [])
 
   useEffect(() => {
+    setIsLoading(true)
     fetchDashboardData()
   }, [fetchDashboardData])
 
@@ -119,7 +119,7 @@ export default function DashboardPage() {
       gradient: 'from-violet-500/20 to-purple-500/20',
       iconBg: 'bg-linear-to-br from-violet-500 to-purple-600',
       trend: '+12%',
-      href: '/events',
+      href: '/organizer/events',
     },
     {
       title: 'Categories',
@@ -128,7 +128,7 @@ export default function DashboardPage() {
       gradient: 'from-blue-500/20 to-cyan-500/20',
       iconBg: 'bg-linear-to-br from-blue-500 to-cyan-500',
       trend: '+8%',
-      href: '/events',
+      href: '/organizer/events',
     },
     {
       title: 'Total Votes',
@@ -137,7 +137,7 @@ export default function DashboardPage() {
       gradient: 'from-amber-500/20 to-yellow-500/20',
       iconBg: 'bg-linear-to-br from-amber-500 to-yellow-500',
       trend: '+24%',
-      href: '/events',
+      href: '/organizer/events',
     },
     {
       title: 'Nominees',
@@ -146,7 +146,7 @@ export default function DashboardPage() {
       gradient: 'from-emerald-500/20 to-teal-500/20',
       iconBg: 'bg-linear-to-br from-emerald-500 to-teal-500',
       trend: '+15%',
-      href: '/events',
+      href: '/organizer/events',
     },
   ]
 
@@ -241,7 +241,7 @@ export default function DashboardPage() {
       >
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-4xl font-bold bg-linear-to-r from-white via-purple-200 to-purple-400 bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold bg-clip-text text-white">
               Dashboard
             </h1>
             <Badge className="bg-linear-to-r from-violet-500/30 to-purple-500/30 text-purple-200 border-purple-500/40">
@@ -250,7 +250,7 @@ export default function DashboardPage() {
             </Badge>
           </div>
           <p className="text-text-secondary mt-2 text-lg">
-            Welcome back! Here's what's happening with your events.
+            Welcome back! Here&apos;s what&apos;s happening with your events.
           </p>
         </div>
         <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
@@ -397,7 +397,7 @@ export default function DashboardPage() {
               </div>
               <Button variant="ghost" size="sm" asChild className="group">
                 <Link
-                  href="/events"
+                  href="/orgainer/events"
                   className="text-purple-400 hover:text-purple-300"
                 >
                   View All
@@ -445,7 +445,7 @@ export default function DashboardPage() {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.1 }}
                     >
-                      <Link href={`/events/${event.id}`}>
+                      <Link href={`/organizer/events/${event.id}`}>
                         <div className="flex items-center gap-4 p-4 rounded-xl bg-purple-bg/50 hover:bg-purple-accent/10 transition-all duration-300 group border border-transparent hover:border-purple-accent/20">
                           <div className="relative">
                             <Avatar className="h-14 w-14 border-2 border-purple-accent/30 shadow-lg">
@@ -526,7 +526,7 @@ export default function DashboardPage() {
               </motion.div>
               
               <motion.div whileHover={{ x: 4, scale: 1.01 }} whileTap={{ scale: 0.98 }}>
-                <Link href="/events">
+                <Link href="/organizer/events">
                   <div className="flex items-center gap-4 p-4 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 hover:border-white/30 transition-all duration-300 group cursor-pointer">
                     <div className="p-2.5 rounded-lg bg-purple-500/30">
                       <Calendar className="h-5 w-5 text-purple-300" />
@@ -541,7 +541,7 @@ export default function DashboardPage() {
               </motion.div>
               
               <motion.div whileHover={{ x: 4, scale: 1.01 }} whileTap={{ scale: 0.98 }}>
-                <Link href="/withdrawals">
+                <Link href="/organizer/withdrawals">
                   <div className="flex items-center gap-4 p-4 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 hover:border-white/30 transition-all duration-300 group cursor-pointer">
                     <div className="p-2.5 rounded-lg bg-emerald-500/30">
                       <BarChart3 className="h-5 w-5 text-emerald-300" />
@@ -558,7 +558,7 @@ export default function DashboardPage() {
           </Card>
 
           {/* Pro Tip */}
-          <Card className="bg-linear-to-br from-amber-500/10 via-purple-surface to-purple-surface border-amber-500/20">
+          <Card className="bg-purple-surface border-amber-500/20">
             <CardContent className="p-5">
               <div className="flex items-start gap-3">
                 <div className="p-2 rounded-lg bg-amber-500/20 shrink-0">

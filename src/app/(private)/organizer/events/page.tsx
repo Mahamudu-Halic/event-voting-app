@@ -226,7 +226,7 @@ export default function EventsPage() {
       >
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-4xl font-bold bg-linear-to-r from-white via-purple-200 to-purple-400 bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold bg-clip-text text-white">
               My Events
             </h1>
             <Badge className="bg-linear-to-r from-violet-500/30 to-purple-500/30 text-purple-200 border-purple-500/40">

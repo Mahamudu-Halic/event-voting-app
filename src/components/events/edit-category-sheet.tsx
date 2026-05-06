@@ -108,7 +108,7 @@ export function EditCategorySheet({ categoryId, eventId, defaultValues, onSucces
               type="button"
               variant="outline"
               onClick={handleClose}
-              className="flex-1 border-purple-accent/30 text-text-primary hover:bg-purple-accent/20"
+              className="flex-1 border-purple-accent/30 hover:text-text-primary hover:bg-purple-accent/20"
             >
               Cancel
             </Button>

@@ -292,7 +292,7 @@ export default function AdminWithdrawalsPage() {
                             <Button
                               variant="outline"
                               size="sm"
-                              className="border-purple-accent text-text-primary hover:bg-purple-surface"
+                              className="border-purple-accent hover:bg-purple-surface"
                               onClick={() => setSelectedWithdrawal(withdrawal)}
                             >
                               <Eye className="h-4 w-4 mr-2" />

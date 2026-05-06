@@ -204,76 +204,101 @@ export function AddNomineeSheet({
         }
       }}
     >
-      <SheetContent className="bg-purple-surface border-purple-accent/50 w-full sm:max-w-md">
-        <SheetHeader>
-          <SheetTitle className="text-text-primary">
+      <SheetContent className="bg-purple-surface border-purple-accent/40 w-full sm:max-w-md overflow-y-auto">
+        <SheetHeader className="space-y-2 pb-6 border-b border-purple-accent/20">
+          <SheetTitle className="text-text-primary text-xl font-semibold tracking-tight">
             {isEditing ? "Edit Nominee" : "Add Nominee"}
           </SheetTitle>
-          <SheetDescription className="text-text-secondary">
+          <SheetDescription className="text-text-secondary leading-relaxed">
             {isEditing
               ? "Update the nominee details below."
               : "Fill in the details to create a new nominee. A unique code will be generated automatically."}
           </SheetDescription>
         </SheetHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-6 mt-6">
+        <form onSubmit={handleSubmit} className="space-y-8 mt-6">
           {/* Image Upload */}
-          <div className="space-y-2">
-            <Label className="text-text-primary">Photo</Label>
-            <div className="flex items-start gap-4">
-              <div className="relative">
-                <Avatar className="h-20 w-20 border-2 border-dashed border-purple-accent/50">
+          <div className="space-y-3">
+            <Label className="text-text-primary text-sm font-medium">Profile Photo</Label>
+            <div className="flex items-start gap-5">
+              <div className="relative shrink-0 group">
+                <div className="h-28 w-28 rounded-2xl border-2 border-dashed border-purple-accent/30 flex items-center justify-center overflow-hidden bg-purple-bg/40 transition-all duration-200 group-hover:border-purple-accent/60">
                   {formData.imagePreview ? (
-                    <AvatarImage
+                    <img
                       src={formData.imagePreview}
                       alt="Preview"
-                      className="object-cover"
+                      className="h-full w-full object-cover"
                     />
                   ) : (
-                    <AvatarFallback className="bg-purple-accent/20">
-                      <ImageIcon className="h-8 w-8 text-text-tertiary" />
-                    </AvatarFallback>
+                    <div className="flex flex-col items-center gap-1.5">
+                      <ImageIcon className="h-8 w-8 text-text-tertiary/40" />
+                      <span className="text-[10px] text-text-tertiary/50 font-medium uppercase tracking-wider">No image</span>
+                    </div>
                   )}
-                </Avatar>
+                </div>
                 {formData.imagePreview && (
                   <button
                     type="button"
                     onClick={handleClearImage}
-                    className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 transition-colors"
+                    className="absolute -top-2 -right-2 h-7 w-7 rounded-full bg-red-500 text-white flex items-center justify-center shadow-lg border-2 border-purple-surface hover:bg-red-600 transition-colors"
                   >
-                    <X className="h-3 w-3" />
+                    <X className="h-4 w-4" />
                   </button>
                 )}
               </div>
-              <div className="flex-1 space-y-2">
-                <div className="relative">
-                  <Input
-                    type="file"
-                    accept="image/jpeg,image/png,image/gif,image/webp"
-                    onChange={handleImageChange}
-                    className="bg-purple-bg border-purple-accent/50 text-text-primary file:text-text-secondary file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-purple-accent/30 file:text-text-primary hover:file:bg-purple-accent/50 cursor-pointer"
-                  />
-                  <Upload className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-tertiary pointer-events-none" />
+
+              <div className="flex-1 space-y-3 pt-1">
+                <div className="flex items-center gap-3">
+                  <label className="relative cursor-pointer inline-flex">
+                    <Input
+                      type="file"
+                      accept="image/jpeg,image/png,image/gif,image/webp"
+                      onChange={handleImageChange}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    />
+                    <span className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-purple-accent/15 border border-purple-accent/30 text-text-primary text-sm font-medium hover:bg-purple-accent/25 hover:border-purple-accent/50 transition-all duration-200">
+                      <Upload className="h-4 w-4 text-text-secondary" />
+                      {formData.imagePreview ? "Change Photo" : "Upload Photo"}
+                    </span>
+                  </label>
+                  {formData.imageFile && (
+                    <span className="text-xs text-emerald-400 font-medium">
+                      Ready to upload
+                    </span>
+                  )}
                 </div>
-                {imageError && (
-                  <p className="text-xs text-red-400">{imageError}</p>
-                )}
-                <p className="text-xs text-text-tertiary">
-                  Max file size: 5MB. Supported formats: JPG, PNG, GIF, WebP
-                </p>
-                {formData.imageFile && (
-                  <p className="text-xs text-gold-primary">
-                    Selected: {formData.imageFile.name} ({formatFileSize(formData.imageFile.size)})
+
+                <div className="space-y-1.5">
+                  <p className="text-xs text-white leading-relaxed">
+                    Recommended: square image, at least 400×400px. Max 5MB.
                   </p>
+                  <p className="text-xs text-white/60">
+                    JPG, PNG, GIF, WebP
+                  </p>
+                </div>
+
+                {imageError && (
+                  <div className="flex items-center gap-2 text-sm text-red-400 bg-red-500/10 rounded-lg px-3 py-2 border border-red-500/20">
+                    <X className="h-4 w-4 shrink-0" />
+                    {imageError}
+                  </div>
+                )}
+
+                {formData.imageFile && (
+                  <div className="flex items-center gap-2 text-sm text-emerald-400 bg-emerald-500/10 rounded-lg px-3 py-2 border border-emerald-500/20">
+                    <Upload className="h-4 w-4 shrink-0" />
+                    <span className="truncate max-w-[200px]">{formData.imageFile.name}</span>
+                    <span className="text-emerald-400/60 text-xs">({formatFileSize(formData.imageFile.size)})</span>
+                  </div>
                 )}
               </div>
             </div>
           </div>
 
           {/* Full Name */}
-          <div className="space-y-2">
-            <Label htmlFor="name" className="text-text-primary">
-              Full Name *
+          <div className="space-y-3">
+            <Label htmlFor="name" className="text-text-primary text-sm font-medium">
+              Full Name <span className="text-red-400">*</span>
             </Label>
             <Input
               id="name"
@@ -285,15 +310,15 @@ export function AddNomineeSheet({
                 }))
               }
               placeholder="Enter nominee name"
-              className="bg-purple-bg border-purple-accent/50 text-text-primary placeholder:text-text-tertiary"
+              className="bg-purple-bg/50 border-purple-accent/40 text-text-primary placeholder:text-text-tertiary/60 focus:border-purple-accent focus:ring-1 focus:ring-purple-accent/30 transition-all h-11"
               disabled={isSubmitting}
             />
           </div>
 
           {/* Category */}
-          <div className="space-y-2">
-            <Label htmlFor="category" className="text-text-primary">
-              Category *
+          <div className="space-y-3">
+            <Label htmlFor="category" className="text-text-primary text-sm font-medium">
+              Category <span className="text-red-400">*</span>
             </Label>
             <Select
               value={formData.category_id}
@@ -302,15 +327,15 @@ export function AddNomineeSheet({
               }
               disabled={isSubmitting || categories.length === 0}
             >
-              <SelectTrigger className="bg-purple-bg border-purple-accent/50 text-text-primary">
+              <SelectTrigger className="bg-purple-bg/50 border-purple-accent/40 text-text-primary h-11 focus:ring-1 focus:ring-purple-accent/30 focus:border-purple-accent">
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
-              <SelectContent className="bg-purple-surface border-purple-accent/50">
+              <SelectContent className="bg-purple-surface border-purple-accent/40 shadow-xl">
                 {categories.map((cat) => (
                   <SelectItem
                     key={cat.id}
                     value={cat.id}
-                    className="text-text-primary"
+                    className="text-text-primary focus:bg-purple-accent/20 focus:text-text-primary cursor-pointer"
                   >
                     {cat.category_name}
                   </SelectItem>
@@ -318,7 +343,7 @@ export function AddNomineeSheet({
               </SelectContent>
             </Select>
             {categories.length === 0 && (
-              <p className="text-xs text-text-tertiary">
+              <p className="text-sm text-amber-400 bg-amber-500/10 rounded-md px-3 py-2">
                 No categories available. Please create categories first.
               </p>
             )}
@@ -326,19 +351,24 @@ export function AddNomineeSheet({
 
           {/* Unique Code Display (for editing) */}
           {isEditing && editingNominee && (
-            <div className="space-y-2">
-              <Label className="text-text-primary">Unique Code</Label>
-              <code className="block px-3 py-2 bg-purple-bg rounded border border-purple-accent/50 text-gold-primary font-mono text-sm">
-                {editingNominee.unique_code}
-              </code>
-              <p className="text-xs text-text-tertiary">
-                This code is used for QR code voting
+            <div className="space-y-3">
+              <Label className="text-text-primary text-sm font-medium">Unique Code</Label>
+              <div className="bg-purple-bg/50 rounded-lg border border-purple-accent/30 px-4 py-3 flex items-center justify-between">
+                <code className="text-gold-primary font-mono text-base font-semibold tracking-wider">
+                  {editingNominee.unique_code}
+                </code>
+                <span className="text-xs text-text-tertiary bg-purple-accent/20 px-2 py-1 rounded">
+                  QR Voting
+                </span>
+              </div>
+              <p className="text-sm text-text-tertiary">
+                This code is used for QR code voting and nominee identification.
               </p>
             </div>
           )}
 
           {/* Actions */}
-          <div className="flex gap-3 pt-4">
+          <div className="flex gap-3 pt-2">
             <Button
               type="button"
               variant="outline"
@@ -347,14 +377,14 @@ export function AddNomineeSheet({
                 resetForm()
               }}
               disabled={isSubmitting}
-              className="flex-1 border-purple-accent/50 text-text-primary hover:bg-purple-accent/20"
+              className="flex-1 h-11 border-purple-accent/40 hover:bg-purple-accent/15 hover:border-purple-accent/60 hover:text-text-primary transition-all"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={isSubmitting || categories.length === 0}
-              className="flex-1 bg-gold-primary text-purple-bg hover:bg-gold-hover disabled:opacity-50"
+              className="flex-1 h-11 bg-gold-primary text-purple-bg hover:bg-gold-hover disabled:opacity-40 font-medium transition-all"
             >
               {isSubmitting
                 ? isEditing

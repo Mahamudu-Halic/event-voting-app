@@ -69,7 +69,7 @@ export function CTASection() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button
               size="lg"
-              className="bg-gold-primary text-text-tertiary hover:bg-gold-dark font-semibold px-10 h-14 text-lg group"
+              className="bg-gold-primary text-text-tertiary hover:text-white hover:bg-gold-dark font-semibold px-10 h-14 text-lg group"
               asChild
             >
               <Link href="/auth/signup">
@@ -80,7 +80,7 @@ export function CTASection() {
             <Button
               variant="outline"
               size="lg"
-              className="border-purple-accent text-text-primary hover:bg-purple-bg px-10 h-14 text-lg"
+              className="border-purple-accent hover:text-white hover:bg-purple-bg px-10 h-14 text-lg"
               asChild
             >
               <Link href="/contact">Contact Sales</Link>

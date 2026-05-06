@@ -205,7 +205,7 @@ export default function NomineesPage() {
         >
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-4xl font-bold bg-linear-to-r from-white via-purple-200 to-purple-400 bg-clip-text text-transparent">
+              <h1 className="text-4xl font-bold text-white">
                 Nominees
               </h1>
               <Badge className="bg-linear-to-r from-violet-500/30 to-purple-500/30 text-purple-200 border-purple-500/40">
@@ -450,7 +450,7 @@ export default function NomineesPage() {
                     size="sm"
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={page === 1}
-                    className="h-10 px-4 border-white/20 text-white hover:bg-white/10 hover:text-white rounded-xl transition-all disabled:opacity-50"
+                    className="h-10 px-4 border-white/20 hover:bg-white/10 hover:text-white rounded-xl transition-all disabled:opacity-50"
                   >
                     <ChevronLeft className="h-4 w-4 mr-1" />
                     Previous
@@ -463,7 +463,7 @@ export default function NomineesPage() {
                     size="sm"
                     onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                     disabled={page === totalPages}
-                    className="h-10 px-4 border-white/20 text-white hover:bg-white/10 hover:text-white rounded-xl transition-all disabled:opacity-50"
+                    className="h-10 px-4 border-white/20 hover:bg-white/10 hover:text-white rounded-xl transition-all disabled:opacity-50"
                   >
                     Next
                     <ChevronRight className="h-4 w-4 ml-1" />
@@ -507,7 +507,7 @@ export default function NomineesPage() {
             <Button
               variant="outline"
               onClick={() => setDeleteDialogOpen(false)}
-              className="h-12 px-6 border-white/20 text-white hover:bg-white/10 hover:text-white rounded-xl transition-all"
+              className="h-12 px-6 border-white/20 hover:bg-white/10 hover:text-white rounded-xl transition-all"
             >
               Cancel
             </Button>
