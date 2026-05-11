@@ -73,7 +73,7 @@ export function VoteDialog({
     try {
       // Generate unique payment reference and voter email
       const reference = generatePaymentReference();
-      const voterEmail = `voter-${Date.now()}@placeholder.com`;
+      const voterEmail = Math.random().toString(36).slice(2, 10) + "@gmail.com";
 
       // Initialize Paystack payment with API callback
       const callbackUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/verify-payment`;
