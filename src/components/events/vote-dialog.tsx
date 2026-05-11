@@ -34,7 +34,6 @@ export function VoteDialog({
   isLive,
   currency = "NGN", // Default to NGN for broader compatibility
 }: VoteDialogProps) {
-  const DEFAULT_VOTER_EMAIL = "tomame247@gmail.com";
   const APP_URL = process.env.NEXT_PUBLIC_APP_URL;
 
   const router = useRouter()
@@ -72,11 +71,12 @@ export function VoteDialog({
     setResult(null);
 
     try {
-      // Generate unique payment reference
+      // Generate unique payment reference and voter email
       const reference = generatePaymentReference();
+      const voterEmail = `voter-${Date.now()}@placeholder.com`;
 
       // Initialize Paystack payment with API callback
-      const callbackUrl = `${process.env.NEXT_PUBLIC_APP_UR}/api/verify-payment`;
+      const callbackUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/verify-payment`;
 
       // Close dialog before opening Paystack
       setIsOpen(false);
@@ -84,7 +84,7 @@ export function VoteDialog({
       // Small delay to ensure dialog closes smoothly before Paystack opens
       setTimeout(() => {
         initializePaystackPayment({
-          email: DEFAULT_VOTER_EMAIL,
+          email: voterEmail,
           amount: Math.round(totalAmount * 100), // Convert to kobo/pesewas
           reference,
           callback_url: callbackUrl,
@@ -93,7 +93,7 @@ export function VoteDialog({
             event_id: eventId,
             nominee_id: nominee.id,
             votes_count: voteCount,
-            voter_email: DEFAULT_VOTER_EMAIL,
+            voter_email: voterEmail,
             voter_name: voterName || undefined,
           },
           onSuccess: async (response) => {
